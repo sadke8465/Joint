@@ -37,3 +37,18 @@ Add a focused note here when a later phase changes one of these decisions or int
 - Haptics use native SwiftUI sensory feedback through `AppHaptics`.
 - Member assignment is communicated with an icon and localized label in addition to color.
 - Preview and UI-test fixtures stay deterministic and never connect to Supabase.
+
+## Phase 2 local-domain conventions
+
+- `TaskItem`, `TaskDraft`, `EmojiList`, assignment, and status are value types that do not depend on SwiftUI or SwiftData.
+- `StoredTask` and `StoredEmojiList` are the only SwiftData model classes. Stored enum values use raw strings so the domain layer remains independent from persistence details.
+- One root `ModelContainer` owns the on-device store. Its main context is passed to repository implementations when the app environment is created.
+- Views never fetch or mutate SwiftData models. `TaskStore` exposes observable domain values and delegates writes to `TaskRepository` and `EmojiListRepository`.
+- Repository writes explicitly save before the store republishes a fresh projection. This keeps Week, List, Calendar, Archive, and Trash consistent after every mutation.
+- Deletion is soft by default. The task receives a deletion timestamp, remains recoverable in Trash, and can be restored immediately from the six-second undo banner. Permanent deletion is isolated to the Trash screen and requires confirmation.
+- The local prototype uses stable placeholder identifiers for the couple and its two members. Authentication will replace those values without changing task assignment invariants.
+- Person assignment always includes a member identifier; together assignment always clears it. A missing due date represents Someday, and a due time is never retained without a due date.
+- Emoji lists require one emoji grapheme and a non-empty title. Removing a list preserves its tasks and clears only their list association.
+- Sheet presentation remains enum-driven and carries only a task identifier for editing. The editor owns save and dismissal behavior.
+
+Phase 2 deliberately does not add backend calls, authentication, or synchronization. The repositories form the seam that later phases will use to combine the local cache with Supabase.

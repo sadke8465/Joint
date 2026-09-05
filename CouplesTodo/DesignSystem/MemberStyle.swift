@@ -41,4 +41,26 @@ enum MemberStyle: String, CaseIterable, Identifiable {
         case .together: "composer.assignee.together"
         }
     }
+
+    init(task: TaskItem, identity: LocalIdentity) {
+        switch task.assigneeKind {
+        case .together:
+            self = .together
+        case .person where task.assigneeUserID == identity.currentUserID:
+            self = .me
+        case .person:
+            self = .partner
+        }
+    }
+
+    func assignment(identity: LocalIdentity) -> (kind: AssigneeKind, userID: UUID?) {
+        switch self {
+        case .me:
+            (.person, identity.currentUserID)
+        case .partner:
+            (.person, identity.partnerUserID)
+        case .together:
+            (.together, nil)
+        }
+    }
 }

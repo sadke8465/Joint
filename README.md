@@ -6,7 +6,7 @@ This repository is the native successor to the historical [`sadke8465/omer_noam`
 
 ## Current status
 
-Phases 0–1 of [`MIGRATION_PLAN.md`](MIGRATION_PLAN.md) are implemented:
+Phases 0–2 of [`MIGRATION_PLAN.md`](MIGRATION_PLAN.md) are implemented:
 
 - native iPhone-only SwiftUI application target,
 - iOS 18.0 minimum deployment target,
@@ -15,12 +15,16 @@ Phases 0–1 of [`MIGRATION_PLAN.md`](MIGRATION_PLAN.md) are implemented:
 - reproducible XcodeGen project specification,
 - local signing configuration that stays out of version control,
 - semantic color, typography, spacing, card, member, checkbox, motion, and haptic primitives,
-- static Week, List, and Calendar modes backed by deterministic mock content,
-- native task-composer and settings sheets,
+- live Week, List, and Calendar modes backed by the same persisted task store,
+- native create and edit flows for title, notes, assignment, date, time, and emoji list,
+- local create, edit, complete, reopen, soft-delete, undo, restore, and permanent-delete behavior,
+- searchable assignment, date, and emoji-list filters,
+- Archive, Trash, and emoji-list management screens,
+- SwiftData persistence behind repository boundaries,
 - English and Hebrew localization with verified RTL layout,
 - Dynamic Type and Reduce Motion accommodations.
 
-The next vertical slice is Phase 2: domain models, SwiftData persistence, and complete local task behavior.
+The next vertical slice is Phase 3: interaction and visual parity for the primary Week view and the supporting List and Calendar views.
 
 ## Requirements
 
@@ -33,9 +37,11 @@ The next vertical slice is Phase 2: domain models, SwiftData persistence, and co
 1. Copy `Configuration/Local.xcconfig.example` to `Configuration/Local.xcconfig`.
 2. Replace the example Apple development team and bundle identifier values.
 3. Open `CouplesTodo.xcodeproj` in Xcode.
-4. Select an iPhone simulator or connected iPhone and run the `CouplesTodo` scheme.
+4. Select a connected iPhone and run the `CouplesTodo` scheme.
 
 The committed Xcode project builds directly. Run `xcodegen generate` only after changing `project.yml` or when intentionally regenerating project metadata.
+
+For a compile-and-build check without launching a Simulator, build the scheme for the generic iOS device destination with code signing disabled.
 
 ## Configuration safety
 

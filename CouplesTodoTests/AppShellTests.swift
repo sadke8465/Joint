@@ -10,12 +10,38 @@ final class AppShellTests: XCTestCase {
         XCTAssertEqual(MainMode.allCases.map(\.id), ["week", "list", "calendar"])
     }
 
-    func testMockTasksHaveUniqueIdentifiers() {
-        let tasks = MockContent.activeTasks + MockContent.completedTasks
-        XCTAssertEqual(Set(tasks.map(\.id)).count, tasks.count)
+    func testTogetherAssignmentNeverKeepsAPersonIdentifier() {
+        let draft = TaskDraft(
+            title: "Plan dinner",
+            notes: nil,
+            assigneeKind: .together,
+            assigneeUserID: PrototypeIdentity.shared.currentUserID,
+            dueDate: nil,
+            dueTime: nil,
+            listID: nil
+        )
+
+        XCTAssertNil(draft.normalized.assigneeUserID)
+        XCTAssertTrue(draft.isValid)
     }
 
-    func testMockContentCoversEveryAssignmentStyle() {
-        XCTAssertEqual(Set(MockContent.activeTasks.map(\.assignee)), Set(MemberStyle.allCases))
+    func testPersonAssignmentRequiresAMemberIdentifier() {
+        let draft = TaskDraft(
+            title: "Plan dinner",
+            notes: nil,
+            assigneeKind: .person,
+            assigneeUserID: nil,
+            dueDate: nil,
+            dueTime: nil,
+            listID: nil
+        )
+
+        XCTAssertFalse(draft.isValid)
+    }
+
+    func testEmojiListsRequireOneEmojiGrapheme() {
+        XCTAssertTrue(EmojiList.isValidEmoji("👩‍❤️‍👨"))
+        XCTAssertFalse(EmojiList.isValidEmoji("🛒🏠"))
+        XCTAssertFalse(EmojiList.isValidEmoji("a"))
     }
 }

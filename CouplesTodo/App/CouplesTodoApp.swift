@@ -1,12 +1,17 @@
 import SwiftUI
+import SwiftData
 
 @main
+@MainActor
 struct CouplesTodoApp: App {
+    private let environment = AppEnvironment.live()
+
     var body: some Scene {
         WindowGroup {
-            MainView()
+            MainView(store: environment.taskStore)
                 .tint(AppColors.accent)
                 .preferredColorScheme(.light)
         }
+        .modelContainer(environment.modelContainer)
     }
 }

@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct SettingsShellView: View {
+    let store: TaskStore
+
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -11,6 +13,26 @@ struct SettingsShellView: View {
                     Label("settings.two_members", systemImage: "checkmark.seal.fill")
                 }
 
+                Section("settings.tasks") {
+                    NavigationLink {
+                        ArchiveView(store: store)
+                    } label: {
+                        Label("archive.title", systemImage: "archivebox")
+                    }
+
+                    NavigationLink {
+                        TrashView(store: store)
+                    } label: {
+                        Label("trash.title", systemImage: "trash")
+                    }
+
+                    NavigationLink {
+                        EmojiListsView(store: store)
+                    } label: {
+                        Label("lists.title", systemImage: "face.smiling")
+                    }
+                }
+
                 Section("settings.preferences") {
                     Label("settings.language", systemImage: "globe")
                     Label("settings.notifications", systemImage: "bell")
@@ -18,7 +40,7 @@ struct SettingsShellView: View {
                 }
 
                 Section {
-                    Text("settings.phase_note")
+                    Text("settings.local_note")
                         .font(AppTypography.metadata)
                         .foregroundStyle(AppColors.secondaryText)
                 }

@@ -1,14 +1,15 @@
 import SwiftUI
 
 struct CalendarShellView: View {
-    let completedTaskIDs: Set<String>
-    let onToggle: (MockTask) -> Void
+    let store: TaskStore
+    let onEdit: (TaskItem) -> Void
 
-    @State private var selectedDay = 6
+    @State private var displayedMonth = Calendar.current.dateInterval(of: .month, for: .now)?.start ?? .now
+    @State private var selectedDate = Calendar.current.startOfDay(for: .now)
+
+    @Environment(\.locale) private var locale
 
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 4), count: 7)
-    private let days: [Int?] = [nil, nil, 1, 2, 3, 4, 5] + Array(6...30)
-    private let taskDays: Set<Int> = [6, 7, 12, 21]
 
     var body: some View {
         ScrollView {
@@ -26,17 +27,21 @@ struct CalendarShellView: View {
     private var calendarCard: some View {
         VStack(spacing: AppSpacing.medium) {
             HStack {
-                Button(action: {}) {
+                Button {
+                    moveMonth(by: -1)
+                } label: {
                     Image(systemName: "chevron.backward")
                         .frame(width: 44, height: 44)
                 }
                 .accessibilityLabel(Text("calendar.previous_month"))
 
-                Text("fixture.month")
+                Text(displayedMonth, format: .dateTime.month(.wide).year())
                     .font(AppTypography.sectionTitle)
                     .frame(maxWidth: .infinity)
 
-                Button(action: {}) {
+                Button {
+                    moveMonth(by: 1)
+                } label: {
                     Image(systemName: "chevron.forward")
                         .frame(width: 44, height: 44)
                 }
@@ -44,20 +49,21 @@ struct CalendarShellView: View {
             }
 
             LazyVGrid(columns: columns, spacing: AppSpacing.small) {
-                ForEach(weekdayKeys, id: \.self) { key in
-                    Text(LocalizedStringKey(key))
+                ForEach(Array(weekdaySymbols.enumerated()), id: \.offset) { _, symbol in
+                    Text(symbol)
                         .font(AppTypography.caption)
                         .foregroundStyle(AppColors.secondaryText)
                         .frame(maxWidth: .infinity)
                 }
 
-                ForEach(Array(days.enumerated()), id: \.offset) { _, day in
-                    calendarDay(day)
+                ForEach(Array(monthDays.enumerated()), id: \.offset) { _, date in
+                    calendarDay(date)
                 }
             }
 
             Button("calendar.today") {
-                selectedDay = 6
+                displayedMonth = calendar.dateInterval(of: .month, for: .now)?.start ?? .now
+                selectedDate = calendar.startOfDay(for: .now)
             }
             .font(AppTypography.caption)
             .buttonStyle(.bordered)
@@ -69,10 +75,16 @@ struct CalendarShellView: View {
 
     private var agenda: some View {
         VStack(alignment: .leading, spacing: AppSpacing.medium) {
-            Text(selectedDay == 6 ? "date.today" : "calendar.selected_day")
-                .font(AppTypography.sectionTitle)
-                .foregroundStyle(AppColors.primaryText)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            Group {
+                if calendar.isDateInToday(selectedDate) {
+                    Text("date.today")
+                } else {
+                    Text(selectedDate, format: .dateTime.weekday(.wide).month(.wide).day())
+                }
+            }
+            .font(AppTypography.sectionTitle)
+            .foregroundStyle(AppColors.primaryText)
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             if selectedTasks.isEmpty {
                 ContentUnavailableView(
@@ -84,67 +96,101 @@ struct CalendarShellView: View {
                 .appCard()
             } else {
                 ForEach(selectedTasks) { task in
-                    TaskCard(
-                        task: task,
-                        isCompleted: completedTaskIDs.contains(task.id),
-                        onToggle: { onToggle(task) }
-                    )
+                    taskCard(task)
                 }
             }
         }
     }
 
-    private var selectedTasks: [MockTask] {
-        switch selectedDay {
-        case 6: [MockContent.package, MockContent.venue, MockContent.wine]
-        case 7: [MockContent.flowers]
-        default: []
+    private var calendar: Calendar {
+        var calendar = Calendar.current
+        calendar.locale = locale
+        return calendar
+    }
+
+    private var monthDays: [Date?] {
+        guard let dayRange = calendar.range(of: .day, in: .month, for: displayedMonth),
+              let firstWeekday = calendar.dateComponents([.weekday], from: displayedMonth).weekday else {
+            return []
+        }
+
+        let leadingCount = (firstWeekday - calendar.firstWeekday + 7) % 7
+        let leading = Array<Date?>(repeating: nil, count: leadingCount)
+        let days = dayRange.compactMap { day -> Date? in
+            calendar.date(byAdding: .day, value: day - 1, to: displayedMonth)
+        }
+        return leading + days.map(Optional.some)
+    }
+
+    private var weekdaySymbols: [String] {
+        let symbols = calendar.veryShortStandaloneWeekdaySymbols
+        let start = calendar.firstWeekday - 1
+        return Array(symbols[start...] + symbols[..<start])
+    }
+
+    private var selectedTasks: [TaskItem] {
+        store.activeTasks.filter { task in
+            task.dueDate.map { calendar.isDate($0, inSameDayAs: selectedDate) } ?? false
         }
     }
 
-    private var weekdayKeys: [String] {
-        [
-            "calendar.weekday.sun",
-            "calendar.weekday.mon",
-            "calendar.weekday.tue",
-            "calendar.weekday.wed",
-            "calendar.weekday.thu",
-            "calendar.weekday.fri",
-            "calendar.weekday.sat"
-        ]
+    private func hasTasks(on date: Date) -> Bool {
+        store.activeTasks.contains { task in
+            task.dueDate.map { calendar.isDate($0, inSameDayAs: date) } ?? false
+        }
+    }
+
+    private func moveMonth(by offset: Int) {
+        guard let month = calendar.date(byAdding: .month, value: offset, to: displayedMonth) else {
+            return
+        }
+        displayedMonth = calendar.dateInterval(of: .month, for: month)?.start ?? month
+        selectedDate = displayedMonth
     }
 
     @ViewBuilder
-    private func calendarDay(_ day: Int?) -> some View {
-        if let day {
+    private func calendarDay(_ date: Date?) -> some View {
+        if let date {
+            let isSelected = calendar.isDate(date, inSameDayAs: selectedDate)
             Button {
-                selectedDay = day
+                selectedDate = date
             } label: {
                 VStack(spacing: 3) {
-                    Text(day, format: .number)
-                        .font(AppTypography.metadata.weight(day == 6 ? .bold : .regular))
+                    Text(date, format: .dateTime.day())
+                        .font(AppTypography.metadata.weight(calendar.isDateInToday(date) ? .bold : .regular))
 
                     Circle()
-                        .fill(taskDays.contains(day) ? AppColors.accent : .clear)
+                        .fill(hasTasks(on: date) ? AppColors.accent : .clear)
                         .frame(width: 4, height: 4)
                         .accessibilityHidden(true)
                 }
                 .frame(maxWidth: .infinity, minHeight: 42)
-                .foregroundStyle(selectedDay == day ? .white : AppColors.primaryText)
+                .foregroundStyle(isSelected ? .white : AppColors.primaryText)
                 .background(
-                    selectedDay == day ? AppColors.accent : .clear,
+                    isSelected ? AppColors.accent : .clear,
                     in: RoundedRectangle(cornerRadius: 11, style: .continuous)
                 )
             }
             .buttonStyle(.plain)
-            .accessibilityLabel(Text("\(day)"))
-            .accessibilityValue(taskDays.contains(day) ? Text("calendar.has_tasks") : Text("calendar.no_tasks_value"))
-            .accessibilityAddTraits(selectedDay == day ? .isSelected : [])
-            .accessibilityIdentifier("calendar-day-\(day)")
+            .accessibilityLabel(Text(date, format: .dateTime.month(.wide).day()))
+            .accessibilityValue(hasTasks(on: date) ? Text("calendar.has_tasks") : Text("calendar.no_tasks_value"))
+            .accessibilityAddTraits(isSelected ? .isSelected : [])
+            .accessibilityIdentifier("calendar-day-\(calendar.component(.day, from: date))")
         } else {
             Color.clear
                 .frame(minHeight: 42)
                 .accessibilityHidden(true)
         }
+    }
+
+    private func taskCard(_ task: TaskItem) -> some View {
+        TaskCard(
+            task: task,
+            identity: store.identity,
+            emojiList: store.emojiList(id: task.listID),
+            onToggle: { store.toggleCompletion(for: task) },
+            onEdit: { onEdit(task) },
+            onDelete: { store.moveToTrash(task) }
+        )
     }
 }

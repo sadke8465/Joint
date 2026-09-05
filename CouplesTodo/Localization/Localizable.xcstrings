@@ -581,6 +581,307 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Previous week" } },
         "he" : { "stringUnit" : { "state" : "translated", "value" : "השבוע הקודם" } }
       }
+    },
+    "action.cancel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cancel" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "ביטול" } }
+      }
+    },
+    "action.create" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Create" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "יצירה" } }
+      }
+    },
+    "action.ok" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "OK" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "אישור" } }
+      }
+    },
+    "action.undo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Undo" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "ביטול פעולה" } }
+      }
+    },
+    "archive.empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No completed tasks" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "אין משימות שהושלמו" } }
+      }
+    },
+    "archive.empty_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Completed tasks will appear here." } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "משימות שהושלמו יופיעו כאן." } }
+      }
+    },
+    "archive.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Archive" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "ארכיון" } }
+      }
+    },
+    "composer.create_list" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Create a custom list" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "יצירת רשימה מותאמת" } }
+      }
+    },
+    "composer.date_value" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Due date" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "תאריך יעד" } }
+      }
+    },
+    "composer.edit_task" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Edit task" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "עריכת משימה" } }
+      }
+    },
+    "composer.list_emoji" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Emoji" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "אימוג׳י" } }
+      }
+    },
+    "composer.list_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "List name" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "שם הרשימה" } }
+      }
+    },
+    "composer.new_list" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "New emoji list" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "רשימת אימוג׳י חדשה" } }
+      }
+    },
+    "composer.new_list_help" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose one emoji and a short name." } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "בחרו אימוג׳י אחד ושם קצר." } }
+      }
+    },
+    "composer.save" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Save changes" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "שמירת שינויים" } }
+      }
+    },
+    "composer.suggestions" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Suggestions" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "הצעות" } }
+      }
+    },
+    "composer.time_value" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Due time" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "שעת יעד" } }
+      }
+    },
+    "error.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Something went wrong" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "משהו השתבש" } }
+      }
+    },
+    "filter.any_date" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Any date" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "כל תאריך" } }
+      }
+    },
+    "filter.overdue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Overdue" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "באיחור" } }
+      }
+    },
+    "list.date_filter" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Date filter" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "סינון לפי תאריך" } }
+      }
+    },
+    "list.preset.home" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Home" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "בית" } }
+      }
+    },
+    "list.preset.plans" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Plans" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "תוכניות" } }
+      }
+    },
+    "list.preset.shopping" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Shopping" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "קניות" } }
+      }
+    },
+    "lists.create_hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Create and assign lists while adding or editing a task." } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "אפשר ליצור ולשייך רשימות בזמן הוספה או עריכה של משימה." } }
+      }
+    },
+    "lists.empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No emoji lists" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "אין רשימות אימוג׳י" } }
+      }
+    },
+    "lists.empty_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Add one from the task editor." } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "אפשר להוסיף רשימה מעורך המשימות." } }
+      }
+    },
+    "lists.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Emoji lists" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "רשימות אימוג׳י" } }
+      }
+    },
+    "settings.local_note" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Tasks are saved on this device. Account sync arrives in a later migration phase." } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "המשימות נשמרות במכשיר הזה. סנכרון החשבון יגיע בשלב מעבר מאוחר יותר." } }
+      }
+    },
+    "settings.tasks" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Tasks and lists" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "משימות ורשימות" } }
+      }
+    },
+    "task.actions" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Task actions" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "פעולות משימה" } }
+      }
+    },
+    "task.delete" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Delete" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "מחיקה" } }
+      }
+    },
+    "task.edit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Edit" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "עריכה" } }
+      }
+    },
+    "trash.delete_forever" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Delete forever" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "מחיקה לצמיתות" } }
+      }
+    },
+    "trash.delete_forever_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "This cannot be undone:" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "אי אפשר לבטל את הפעולה:" } }
+      }
+    },
+    "trash.delete_forever_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Delete task forever?" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "למחוק את המשימה לצמיתות?" } }
+      }
+    },
+    "trash.empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Trash is empty" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "סל המחזור ריק" } }
+      }
+    },
+    "trash.empty_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Deleted tasks will stay here until you restore or remove them." } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "משימות שנמחקו יישארו כאן עד לשחזור או למחיקה." } }
+      }
+    },
+    "trash.moved_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Task moved to Trash" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "המשימה הועברה לסל המחזור" } }
+      }
+    },
+    "trash.restore" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Restore" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "שחזור" } }
+      }
+    },
+    "trash.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Trash" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "סל המחזור" } }
+      }
+    },
+    "week.no_tasks" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No dated tasks this week" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "אין משימות מתוארכות השבוע" } }
+      }
+    },
+    "week.no_tasks_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Add a due date to place a task in the week." } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "הוסיפו תאריך יעד כדי למקם משימה בשבוע." } }
+      }
     }
   },
   "version" : "1.0"

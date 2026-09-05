@@ -1,6 +1,6 @@
 import SwiftUI
 
-private enum TaskFilter: String, CaseIterable, Identifiable {
+private enum AssignmentFilter: String, CaseIterable, Identifiable {
     case all
     case mine
     case partner
@@ -18,20 +18,51 @@ private enum TaskFilter: String, CaseIterable, Identifiable {
     }
 }
 
-struct ListShellView: View {
-    let completedTaskIDs: Set<String>
-    let onToggle: (MockTask) -> Void
+private enum DateFilter: String, CaseIterable, Identifiable {
+    case all
+    case today
+    case thisWeek
+    case overdue
 
-    @State private var selectedFilter: TaskFilter = .all
+    var id: String { rawValue }
+
+    var titleKey: LocalizedStringKey {
+        switch self {
+        case .all: "filter.any_date"
+        case .today: "filter.today"
+        case .thisWeek: "filter.this_week"
+        case .overdue: "filter.overdue"
+        }
+    }
+
+    var iconName: String {
+        switch self {
+        case .all: "calendar"
+        case .today: "sun.max"
+        case .thisWeek: "calendar.badge.clock"
+        case .overdue: "exclamationmark.calendar"
+        }
+    }
+}
+
+struct ListShellView: View {
+    let store: TaskStore
+    let onEdit: (TaskItem) -> Void
+
+    @State private var assignmentFilter: AssignmentFilter = .all
+    @State private var dateFilter: DateFilter = .all
+    @State private var selectedListID: UUID?
     @State private var searchText = ""
     @State private var showsCompleted = false
+
+    private var calendar: Calendar { .current }
 
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: AppSpacing.xLarge) {
                 filterBar
-                datedTasks
-                somedayTasks
+                taskSection(title: "list.dated", tasks: datedTasks)
+                taskSection(title: "list.someday", tasks: somedayTasks)
                 completedTasks
             }
             .padding(.horizontal, AppSpacing.large)
@@ -45,29 +76,46 @@ struct ListShellView: View {
     private var filterBar: some View {
         ScrollView(.horizontal) {
             HStack(spacing: AppSpacing.small) {
-                ForEach(TaskFilter.allCases) { filter in
-                    Button {
-                        selectedFilter = filter
-                    } label: {
-                        Text(filter.titleKey)
-                            .font(AppTypography.caption)
-                            .foregroundStyle(
-                                selectedFilter == filter ? .white : AppColors.secondaryText
-                            )
-                            .padding(.horizontal, AppSpacing.medium)
-                            .frame(minHeight: 36)
-                            .background(
-                                selectedFilter == filter ? AppColors.accent : AppColors.surface,
-                                in: Capsule()
-                            )
+                ForEach(AssignmentFilter.allCases) { filter in
+                    filterButton(
+                        title: filter.titleKey,
+                        isSelected: assignmentFilter == filter
+                    ) {
+                        assignmentFilter = filter
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityAddTraits(selectedFilter == filter ? .isSelected : [])
                     .accessibilityIdentifier("filter-\(filter.rawValue)")
                 }
 
-                filterChip("filter.today", icon: "sun.max")
-                filterChip("filter.this_week", icon: "calendar.badge.clock")
+                Menu {
+                    Picker("list.date_filter", selection: $dateFilter) {
+                        ForEach(DateFilter.allCases) { filter in
+                            Label(filter.titleKey, systemImage: filter.iconName)
+                                .tag(filter)
+                        }
+                    }
+                } label: {
+                    Label(dateFilter.titleKey, systemImage: dateFilter.iconName)
+                        .font(AppTypography.caption)
+                        .foregroundStyle(dateFilter == .all ? AppColors.secondaryText : .white)
+                        .padding(.horizontal, AppSpacing.medium)
+                        .frame(minHeight: 36)
+                        .background(dateFilter == .all ? AppColors.surface : AppColors.accent, in: Capsule())
+                }
+
+                ForEach(store.emojiLists) { list in
+                    Button {
+                        selectedListID = selectedListID == list.id ? nil : list.id
+                    } label: {
+                        Text("\(list.emoji) \(list.title)")
+                            .font(AppTypography.caption)
+                            .foregroundStyle(selectedListID == list.id ? .white : AppColors.secondaryText)
+                            .padding(.horizontal, AppSpacing.medium)
+                            .frame(minHeight: 36)
+                            .background(selectedListID == list.id ? AppColors.accent : AppColors.surface, in: Capsule())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityAddTraits(selectedListID == list.id ? .isSelected : [])
+                }
             }
             .padding(.vertical, 1)
         }
@@ -75,21 +123,18 @@ struct ListShellView: View {
         .accessibilityLabel(Text("list.filters"))
     }
 
-    private var datedTasks: some View {
-        taskSection(title: "list.dated", tasks: filteredTasks.filter { $0.id != "getaway" })
-    }
-
-    private var somedayTasks: some View {
-        taskSection(title: "list.someday", tasks: filteredTasks.filter { $0.id == "getaway" })
-    }
-
     private var completedTasks: some View {
         DisclosureGroup(isExpanded: $showsCompleted) {
-            ForEach(MockContent.completedTasks) { task in
-                TaskCard(task: task, isCompleted: true) {
-                    onToggle(task)
+            if filteredCompletedTasks.isEmpty {
+                Text("archive.empty")
+                    .font(AppTypography.body)
+                    .foregroundStyle(AppColors.secondaryText)
+                    .padding(.top, AppSpacing.small)
+            } else {
+                ForEach(filteredCompletedTasks.prefix(5)) { task in
+                    taskCard(task)
+                        .padding(.top, AppSpacing.small)
                 }
-                .padding(.top, AppSpacing.small)
             }
         } label: {
             Text("list.recently_completed")
@@ -100,23 +145,69 @@ struct ListShellView: View {
         .appCard()
     }
 
-    private var filteredTasks: [MockTask] {
-        MockContent.activeTasks.filter { task in
-            let matchesFilter: Bool = switch selectedFilter {
-            case .all: true
-            case .mine: task.assignee == .me
-            case .partner: task.assignee == .partner
-            case .together: task.assignee == .together
-            }
+    private var filteredTasks: [TaskItem] {
+        store.activeTasks.filter(matchesAllFilters)
+    }
 
-            let matchesSearch = searchText.isEmpty
-                || task.fallbackTitle.localizedCaseInsensitiveContains(searchText)
-
-            return matchesFilter && matchesSearch
+    private var filteredCompletedTasks: [TaskItem] {
+        store.completedTasks.filter { task in
+            matchesAssignment(task)
+                && matchesList(task)
+                && task.matches(searchText)
         }
     }
 
-    private func taskSection(title: LocalizedStringKey, tasks: [MockTask]) -> some View {
+    private var datedTasks: [TaskItem] {
+        filteredTasks.filter { $0.dueDate != nil }
+    }
+
+    private var somedayTasks: [TaskItem] {
+        filteredTasks.filter { $0.dueDate == nil }
+    }
+
+    private func matchesAllFilters(_ task: TaskItem) -> Bool {
+        matchesAssignment(task)
+            && matchesDate(task)
+            && matchesList(task)
+            && task.matches(searchText)
+    }
+
+    private func matchesAssignment(_ task: TaskItem) -> Bool {
+        switch assignmentFilter {
+        case .all:
+            return true
+        case .mine:
+            return task.assigneeKind == .person && task.assigneeUserID == store.identity.currentUserID
+        case .partner:
+            return task.assigneeKind == .person && task.assigneeUserID == store.identity.partnerUserID
+        case .together:
+            return task.assigneeKind == .together
+        }
+    }
+
+    private func matchesDate(_ task: TaskItem) -> Bool {
+        switch dateFilter {
+        case .all:
+            return true
+        case .today:
+            return task.dueDate.map(calendar.isDateInToday) ?? false
+        case .thisWeek:
+            guard let dueDate = task.dueDate,
+                  let interval = calendar.dateInterval(of: .weekOfYear, for: .now) else {
+                return false
+            }
+            return interval.contains(dueDate)
+        case .overdue:
+            guard let dueDate = task.dueDate else { return false }
+            return dueDate < calendar.startOfDay(for: .now)
+        }
+    }
+
+    private func matchesList(_ task: TaskItem) -> Bool {
+        selectedListID == nil || task.listID == selectedListID
+    }
+
+    private func taskSection(title: LocalizedStringKey, tasks: [TaskItem]) -> some View {
         VStack(alignment: .leading, spacing: AppSpacing.medium) {
             Text(title)
                 .font(AppTypography.sectionTitle)
@@ -130,25 +221,37 @@ struct ListShellView: View {
                     .appCard()
             } else {
                 ForEach(tasks) { task in
-                    TaskCard(
-                        task: task,
-                        isCompleted: completedTaskIDs.contains(task.id),
-                        onToggle: { onToggle(task) }
-                    )
+                    taskCard(task)
                 }
             }
         }
     }
 
-    private func filterChip(_ title: LocalizedStringKey, icon: String) -> some View {
-        Button(action: {}) {
-            Label(title, systemImage: icon)
+    private func filterButton(
+        title: LocalizedStringKey,
+        isSelected: Bool,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Text(title)
                 .font(AppTypography.caption)
-                .foregroundStyle(AppColors.secondaryText)
+                .foregroundStyle(isSelected ? .white : AppColors.secondaryText)
                 .padding(.horizontal, AppSpacing.medium)
                 .frame(minHeight: 36)
-                .background(AppColors.surface, in: Capsule())
+                .background(isSelected ? AppColors.accent : AppColors.surface, in: Capsule())
         }
         .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+
+    private func taskCard(_ task: TaskItem) -> some View {
+        TaskCard(
+            task: task,
+            identity: store.identity,
+            emojiList: store.emojiList(id: task.listID),
+            onToggle: { store.toggleCompletion(for: task) },
+            onEdit: { onEdit(task) },
+            onDelete: { store.moveToTrash(task) }
+        )
     }
 }
