@@ -45,6 +45,16 @@ struct TaskItem: Identifiable, Equatable, Hashable, Sendable {
             of: dueDate
         )
     }
+
+    func isOverdue(relativeTo now: Date = .now, calendar: Calendar = .current) -> Bool {
+        guard status == .active, deletedAt == nil, let dueDate else { return false }
+
+        if dueTime != nil, let dueDateTime = dueDateTime(calendar: calendar) {
+            return dueDateTime < now
+        }
+
+        return calendar.startOfDay(for: dueDate) < calendar.startOfDay(for: now)
+    }
 }
 
 enum AssigneeKind: String, Codable, CaseIterable, Sendable {

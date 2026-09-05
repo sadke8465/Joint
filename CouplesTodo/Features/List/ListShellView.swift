@@ -251,7 +251,8 @@ struct ListShellView: View {
             emojiList: store.emojiList(id: task.listID),
             onToggle: { store.toggleCompletion(for: task) },
             onEdit: { onEdit(task) },
-            onDelete: { store.moveToTrash(task) }
+            onDelete: { store.moveToTrash(task) },
+            onReschedule: { store.reschedule(task, to: $0) }
         )
     }
 }

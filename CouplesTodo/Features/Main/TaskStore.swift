@@ -82,6 +82,12 @@ final class TaskStore {
         }
     }
 
+    func reschedule(_ task: TaskItem, to dueDate: Date?) {
+        var draft = TaskDraft(task: task)
+        draft.dueDate = dueDate
+        _ = update(id: task.id, with: draft)
+    }
+
     func moveToTrash(_ task: TaskItem) {
         guard performMutation({ try taskRepository.moveToTrash(id: task.id, now: .now) }) else {
             return

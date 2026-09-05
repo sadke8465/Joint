@@ -7,12 +7,24 @@ struct WeekShellView: View {
     @State private var weekStart = Self.startOfCurrentWeek
     @State private var showsCompleted = false
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.locale) private var locale
+
     private var calendar: Calendar { .current }
 
     var body: some View {
         ScrollView {
             LazyVStack(spacing: AppSpacing.xLarge) {
                 weekNavigator
+
+                if !overdueTasks.isEmpty {
+                    taskSection(
+                        title: "filter.overdue",
+                        icon: "exclamationmark.calendar",
+                        tasks: overdueTasks,
+                        tint: .red
+                    )
+                }
 
                 if datedTasks.isEmpty {
                     ContentUnavailableView(
@@ -28,7 +40,11 @@ struct WeekShellView: View {
                 }
 
                 if !somedayTasks.isEmpty {
-                    taskSection(title: "list.someday", tasks: somedayTasks)
+                    taskSection(
+                        title: "list.someday",
+                        icon: "calendar.badge.minus",
+                        tasks: somedayTasks
+                    )
                 }
 
                 completedSection
@@ -37,6 +53,7 @@ struct WeekShellView: View {
             .padding(.bottom, AppSpacing.xxLarge)
         }
         .scrollIndicators(.hidden)
+        .simultaneousGesture(horizontalSwipe)
         .accessibilityIdentifier("week-screen")
     }
 
@@ -53,6 +70,7 @@ struct WeekShellView: View {
             VStack(spacing: 2) {
                 Text(weekRangeText)
                     .font(AppTypography.sectionTitle)
+                    .contentTransition(.numericText())
                 if isCurrentWeek {
                     Text("week.current")
                         .font(AppTypography.caption)
@@ -75,11 +93,10 @@ struct WeekShellView: View {
 
     private func daySection(_ day: Date) -> some View {
         let tasks = datedTasks.filter { task in
-            guard let dueDate = task.dueDate else { return false }
-            return calendar.isDate(dueDate, inSameDayAs: day)
+            task.dueDate.map { calendar.isDate($0, inSameDayAs: day) } ?? false
         }
 
-        return VStack(alignment: .leading, spacing: AppSpacing.medium) {
+        return VStack(alignment: .leading, spacing: AppSpacing.large) {
             HStack(alignment: .firstTextBaseline) {
                 dayTitle(day)
                     .font(AppTypography.sectionTitle)
@@ -92,8 +109,8 @@ struct WeekShellView: View {
                     .foregroundStyle(AppColors.secondaryText)
             }
 
-            ForEach(tasks) { task in
-                taskCard(task)
+            ForEach(taskGroups(for: tasks)) { group in
+                taskGroup(group)
             }
         }
         .padding(calendar.isDateInToday(day) ? AppSpacing.medium : 0)
@@ -103,11 +120,43 @@ struct WeekShellView: View {
         )
     }
 
-    private func taskSection(title: LocalizedStringKey, tasks: [TaskItem]) -> some View {
+    private func taskGroup(_ group: WeekTaskGroup) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.small) {
+            HStack(alignment: .top, spacing: AppSpacing.small) {
+                Circle()
+                    .fill(group.style.color)
+                    .frame(width: 7, height: 7)
+                    .padding(.top, 6)
+                    .accessibilityHidden(true)
+
+                Text(
+                    TaskSentenceFormatter(locale: locale).sentence(
+                        for: group.tasks,
+                        assignee: group.style
+                    )
+                )
+                .font(AppTypography.metadata)
+                .foregroundStyle(AppColors.secondaryText)
+                .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.horizontal, AppSpacing.xSmall)
+
+            ForEach(group.tasks) { task in
+                taskCard(task)
+            }
+        }
+    }
+
+    private func taskSection(
+        title: LocalizedStringKey,
+        icon: String,
+        tasks: [TaskItem],
+        tint: Color = AppColors.primaryText
+    ) -> some View {
         VStack(alignment: .leading, spacing: AppSpacing.medium) {
-            Text(title)
+            Label(title, systemImage: icon)
                 .font(AppTypography.sectionTitle)
-                .foregroundStyle(AppColors.primaryText)
+                .foregroundStyle(tint)
 
             ForEach(tasks) { task in
                 taskCard(task)
@@ -117,39 +166,60 @@ struct WeekShellView: View {
 
     private var completedSection: some View {
         DisclosureGroup(isExpanded: $showsCompleted) {
-            if store.completedTasks.isEmpty {
-                Text("archive.empty")
+            if completedThisWeek.isEmpty {
+                Text("week.done_empty")
                     .font(AppTypography.body)
                     .foregroundStyle(AppColors.secondaryText)
                     .padding(.top, AppSpacing.small)
             } else {
-                ForEach(store.completedTasks.prefix(5)) { task in
+                ForEach(completedThisWeek) { task in
                     taskCard(task)
                         .padding(.top, AppSpacing.small)
                 }
             }
         } label: {
-            Label("week.done", systemImage: "checkmark.circle.fill")
-                .font(AppTypography.sectionTitle)
-                .foregroundStyle(AppColors.secondaryText)
+            Label {
+                Text("week.done")
+            } icon: {
+                Image(systemName: "checkmark.circle.fill")
+            }
+            .font(AppTypography.sectionTitle)
+            .foregroundStyle(AppColors.secondaryText)
         }
         .tint(AppColors.secondaryText)
         .appCard()
     }
 
     private var datedTasks: [TaskItem] {
-        guard let weekEnd = calendar.date(byAdding: .day, value: 7, to: weekStart) else {
-            return []
-        }
+        guard let weekEnd else { return [] }
         return store.activeTasks.filter { task in
             guard let dueDate = task.dueDate else { return false }
             return dueDate >= weekStart && dueDate < weekEnd
         }
     }
 
+    private var overdueTasks: [TaskItem] {
+        guard isCurrentWeek else { return [] }
+        return store.activeTasks.filter { task in
+            task.isOverdue() && (task.dueDate ?? .distantFuture) < weekStart
+        }
+    }
+
     private var somedayTasks: [TaskItem] {
         guard isCurrentWeek else { return [] }
         return store.activeTasks.filter { $0.dueDate == nil }
+    }
+
+    private var completedThisWeek: [TaskItem] {
+        guard let weekEnd else { return [] }
+        return store.completedTasks.filter { task in
+            guard let completedAt = task.completedAt else { return false }
+            return completedAt >= weekStart && completedAt < weekEnd
+        }
+    }
+
+    private var weekEnd: Date? {
+        calendar.date(byAdding: .day, value: 7, to: weekStart)
     }
 
     private var daysWithTasks: [Date] {
@@ -174,8 +244,30 @@ struct WeekShellView: View {
         calendar.isDate(weekStart, equalTo: .now, toGranularity: .weekOfYear)
     }
 
+    private var horizontalSwipe: some Gesture {
+        DragGesture(minimumDistance: 36)
+            .onEnded { value in
+                guard abs(value.translation.width) > abs(value.translation.height) * 1.25 else {
+                    return
+                }
+                moveWeek(by: value.translation.width < 0 ? 1 : -1)
+            }
+    }
+
     private func moveWeek(by offset: Int) {
-        weekStart = calendar.date(byAdding: .weekOfYear, value: offset, to: weekStart) ?? weekStart
+        withAnimation(AppMotion.content(reduceMotion: reduceMotion)) {
+            weekStart = calendar.date(byAdding: .weekOfYear, value: offset, to: weekStart) ?? weekStart
+            showsCompleted = false
+        }
+    }
+
+    private func taskGroups(for tasks: [TaskItem]) -> [WeekTaskGroup] {
+        MemberStyle.allCases.compactMap { style in
+            let matchingTasks = tasks.filter {
+                MemberStyle(task: $0, identity: store.identity) == style
+            }
+            return matchingTasks.isEmpty ? nil : WeekTaskGroup(style: style, tasks: matchingTasks)
+        }
     }
 
     @ViewBuilder
@@ -196,7 +288,8 @@ struct WeekShellView: View {
             emojiList: store.emojiList(id: task.listID),
             onToggle: { store.toggleCompletion(for: task) },
             onEdit: { onEdit(task) },
-            onDelete: { store.moveToTrash(task) }
+            onDelete: { store.moveToTrash(task) },
+            onReschedule: { store.reschedule(task, to: $0) }
         )
     }
 
@@ -204,4 +297,11 @@ struct WeekShellView: View {
         Calendar.current.dateInterval(of: .weekOfYear, for: .now)?.start
             ?? Calendar.current.startOfDay(for: .now)
     }
+}
+
+private struct WeekTaskGroup: Identifiable {
+    let style: MemberStyle
+    let tasks: [TaskItem]
+
+    var id: String { style.id }
 }

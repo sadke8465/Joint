@@ -64,7 +64,7 @@ struct TaskComposerView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("action.cancel") {
+                    Button("composer.done") {
                         dismiss()
                     }
                     .accessibilityIdentifier("composer-done")
@@ -106,7 +106,7 @@ struct TaskComposerView: View {
                 .lineLimit(1...3)
                 .submitLabel(.done)
                 .focused($titleIsFocused)
-                .onSubmit(save)
+                .onSubmit(submitFromKeyboard)
                 .accessibilityIdentifier("task-title")
         }
         .appCard()
@@ -272,7 +272,7 @@ struct TaskComposerView: View {
     }
 
     private var saveButton: some View {
-        Button(action: save) {
+        Button(action: saveAndClose) {
             Text(LocalizedStringKey(isEditing ? "composer.save" : "composer.add"))
                 .font(AppTypography.body.weight(.semibold))
                 .frame(maxWidth: .infinity, minHeight: 52)
@@ -307,13 +307,12 @@ struct TaskComposerView: View {
         return "\(list.emoji) \(list.title)"
     }
 
-    private func save() {
-        guard canSave else { return }
+    private func makeDraft() -> TaskDraft {
         let assignment = assignee.assignment(identity: store.identity)
         let timeComponents = hasDate && hasTime
             ? Calendar.current.dateComponents([.hour, .minute], from: dueTime)
             : nil
-        let draft = TaskDraft(
+        return TaskDraft(
             title: title,
             notes: notes,
             assigneeKind: assignment.kind,
@@ -322,18 +321,50 @@ struct TaskComposerView: View {
             dueTime: timeComponents,
             listID: selectedListID
         )
+    }
 
-        let didSave: Bool
-        if let taskID {
-            didSave = store.update(id: taskID, with: draft)
-        } else {
-            didSave = store.create(draft)
-        }
+    private func saveAndClose() {
+        guard canSave else { return }
+        let didSave = persistCurrentDraft()
 
         if didSave {
             saveFeedbackTrigger += 1
             dismiss()
         }
+    }
+
+    private func submitFromKeyboard() {
+        guard canSave else { return }
+        if isEditing {
+            saveAndClose()
+            return
+        }
+
+        guard persistCurrentDraft() else { return }
+        saveFeedbackTrigger += 1
+        resetForRapidEntry()
+    }
+
+    private func persistCurrentDraft() -> Bool {
+        let draft = makeDraft()
+
+        if let taskID {
+            return store.update(id: taskID, with: draft)
+        } else {
+            return store.create(draft)
+        }
+    }
+
+    private func resetForRapidEntry() {
+        title = ""
+        notes = ""
+        assignee = .together
+        hasDate = false
+        hasTime = false
+        selectedListID = nil
+        dueDate = Calendar.current.date(byAdding: .day, value: 1, to: .now) ?? .now
+        dueTime = .now
+        titleIsFocused = true
     }
 
     private func selectPreset(_ preset: EmojiListPreset) {

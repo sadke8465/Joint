@@ -7,6 +7,7 @@ struct TaskCard: View {
     let onToggle: () -> Void
     var onEdit: (() -> Void)?
     var onDelete: (() -> Void)?
+    var onReschedule: ((Date?) -> Void)?
 
     var body: some View {
         HStack(alignment: .top, spacing: AppSpacing.small) {
@@ -30,10 +31,11 @@ struct TaskCard: View {
                             Label {
                                 Text(dueDate, format: .dateTime.month(.abbreviated).day())
                             } icon: {
-                                Image(systemName: "calendar")
+                                Image(systemName: task.isOverdue() ? "exclamationmark.calendar" : "calendar")
                             }
                             .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.secondaryText)
+                            .foregroundStyle(task.isOverdue() ? Color.red : AppColors.secondaryText)
+                            .accessibilityLabel(dueDateAccessibilityLabel(dueDate))
                         }
 
                         if task.dueTime != nil, let dueDateTime = task.dueDateTime() {
@@ -59,10 +61,25 @@ struct TaskCard: View {
             .buttonStyle(.plain)
             .disabled(onEdit == nil)
 
-            if onEdit != nil || onDelete != nil {
+            if onEdit != nil || onDelete != nil || onReschedule != nil {
                 Menu {
                     if let onEdit {
                         Button("task.edit", systemImage: "pencil", action: onEdit)
+                    }
+                    if let onReschedule {
+                        Menu("task.reschedule", systemImage: "calendar.badge.clock") {
+                            Button("date.today", systemImage: "sun.max") {
+                                onReschedule(Calendar.current.startOfDay(for: .now))
+                            }
+                            Button("date.tomorrow", systemImage: "sunrise") {
+                                onReschedule(
+                                    Calendar.current.date(byAdding: .day, value: 1, to: .now)
+                                )
+                            }
+                            Button("list.someday", systemImage: "calendar.badge.minus") {
+                                onReschedule(nil)
+                            }
+                        }
                     }
                     if let onDelete {
                         Button("task.delete", systemImage: "trash", role: .destructive, action: onDelete)
@@ -78,6 +95,34 @@ struct TaskCard: View {
         }
         .appCard()
         .opacity(task.isCompleted ? 0.72 : 1)
+        .accessibilityElement(children: .combine)
+        .accessibilityAction {
+            if let onEdit {
+                onEdit()
+            } else {
+                onToggle()
+            }
+        }
+        .accessibilityActions {
+            Button(
+                LocalizedStringKey(task.isCompleted ? "task.mark_incomplete" : "task.mark_complete"),
+                action: onToggle
+            )
+            if let onEdit {
+                Button("task.edit", action: onEdit)
+            }
+            if let onDelete {
+                Button("task.delete", action: onDelete)
+            }
+        }
         .accessibilityIdentifier("task-\(task.id.uuidString)")
+    }
+
+    private func dueDateAccessibilityLabel(_ dueDate: Date) -> Text {
+        if task.isOverdue() {
+            Text("filter.overdue") + Text(", ") + Text(dueDate, format: .dateTime.month(.wide).day())
+        } else {
+            Text(dueDate, format: .dateTime.month(.wide).day())
+        }
     }
 }

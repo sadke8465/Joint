@@ -52,3 +52,15 @@ Add a focused note here when a later phase changes one of these decisions or int
 - Sheet presentation remains enum-driven and carries only a task identifier for editing. The editor owns save and dismissal behavior.
 
 Phase 2 deliberately does not add backend calls, authentication, or synchronization. The repositories form the seam that later phases will use to combine the local cache with Supabase.
+
+## Phase 3 presentation conventions
+
+- Week data is derived from one selected week boundary. Active tasks are grouped by day and then by assignment in a stable Me, Partner, Together order.
+- `TaskSentenceFormatter` owns deterministic sentence generation. It uses localized templates plus Foundation list formatting, works offline, and never calls a generative service.
+- The local prototype uses neutral role-first copy instead of inventing member names or Hebrew grammatical gender. Profile-backed names and grammar preferences arrive with authentication and profile phases.
+- The current week surfaces overdue tasks from earlier dates in a separate section. A date-only task becomes overdue after its calendar day; a timed task becomes overdue after its exact local due time.
+- Completed-this-week is based on `completedAt`, not the task's due date, and stays collapsed so completed work does not dominate the primary view.
+- Week and Calendar keep visible previous/next buttons and also accept deliberate horizontal drags. Vertical scrolling wins unless horizontal movement clearly dominates, and navigation animations honor Reduce Motion.
+- Task menus expose quick Today, Tomorrow, and Someday rescheduling while the editor remains the complete route for field changes.
+- The task card keeps essential controls visible and adds equivalent accessibility actions for complete, edit, and delete.
+- Keyboard submit in a new-task composer persists the task, resets every field to the documented defaults, and retains title focus for rapid entry. The primary button still saves and closes.

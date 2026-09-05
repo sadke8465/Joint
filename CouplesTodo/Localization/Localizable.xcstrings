@@ -882,6 +882,41 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Add a due date to place a task in the week." } },
         "he" : { "stringUnit" : { "state" : "translated", "value" : "הוסיפו תאריך יעד כדי למקם משימה בשבוע." } }
       }
+    },
+    "task.reschedule" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reschedule" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "שינוי מועד" } }
+      }
+    },
+    "week.done_empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No tasks completed this week" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "אין משימות שהושלמו השבוע" } }
+      }
+    },
+    "week.summary.mine_format" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "For me: %@" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "לי: %@" } }
+      }
+    },
+    "week.summary.partner_format" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "For my partner: %@" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "לבן/בת הזוג: %@" } }
+      }
+    },
+    "week.summary.together_format" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Together: %@" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "ביחד: %@" } }
+      }
     }
   },
   "version" : "1.0"

@@ -9,6 +9,36 @@ struct TaskDraft: Equatable, Sendable {
     var dueTime: DateComponents?
     var listID: UUID?
 
+    init(
+        title: String,
+        notes: String?,
+        assigneeKind: AssigneeKind,
+        assigneeUserID: UUID?,
+        dueDate: Date?,
+        dueTime: DateComponents?,
+        listID: UUID?
+    ) {
+        self.title = title
+        self.notes = notes
+        self.assigneeKind = assigneeKind
+        self.assigneeUserID = assigneeUserID
+        self.dueDate = dueDate
+        self.dueTime = dueTime
+        self.listID = listID
+    }
+
+    init(task: TaskItem) {
+        self.init(
+            title: task.title,
+            notes: task.notes,
+            assigneeKind: task.assigneeKind,
+            assigneeUserID: task.assigneeUserID,
+            dueDate: task.dueDate,
+            dueTime: task.dueTime,
+            listID: task.listID
+        )
+    }
+
     var normalized: TaskDraft {
         TaskDraft(
             title: title.trimmingCharacters(in: .whitespacesAndNewlines),

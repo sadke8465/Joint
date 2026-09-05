@@ -6,7 +6,7 @@ This repository is the native successor to the historical [`sadke8465/omer_noam`
 
 ## Current status
 
-Phases 0–2 of [`MIGRATION_PLAN.md`](MIGRATION_PLAN.md) are implemented:
+Phases 0–3 of [`MIGRATION_PLAN.md`](MIGRATION_PLAN.md) are implemented:
 
 - native iPhone-only SwiftUI application target,
 - iOS 18.0 minimum deployment target,
@@ -21,10 +21,16 @@ Phases 0–2 of [`MIGRATION_PLAN.md`](MIGRATION_PLAN.md) are implemented:
 - searchable assignment, date, and emoji-list filters,
 - Archive, Trash, and emoji-list management screens,
 - SwiftData persistence behind repository boundaries,
+- assignee-grouped week sections with deterministic localized summaries,
+- horizontal week and month navigation with Reduce Motion support,
+- overdue visibility and completed-this-week history,
+- quick Today, Tomorrow, and Someday rescheduling,
+- rapid consecutive task entry from the keyboard,
+- explicit accessibility actions for completion, editing, and deletion,
 - English and Hebrew localization with verified RTL layout,
 - Dynamic Type and Reduce Motion accommodations.
 
-The next vertical slice is Phase 3: interaction and visual parity for the primary Week view and the supporting List and Calendar views.
+The next vertical slice is Phase 4: provision a fresh Supabase project and add the shared database schema and local CLI workflow.
 
 ## Requirements
 

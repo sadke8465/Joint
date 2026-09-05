@@ -7,6 +7,7 @@ struct CalendarShellView: View {
     @State private var displayedMonth = Calendar.current.dateInterval(of: .month, for: .now)?.start ?? .now
     @State private var selectedDate = Calendar.current.startOfDay(for: .now)
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.locale) private var locale
 
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 4), count: 7)
@@ -21,6 +22,7 @@ struct CalendarShellView: View {
             .padding(.bottom, AppSpacing.xxLarge)
         }
         .scrollIndicators(.hidden)
+        .simultaneousGesture(horizontalSwipe)
         .accessibilityIdentifier("calendar-screen")
     }
 
@@ -38,6 +40,7 @@ struct CalendarShellView: View {
                 Text(displayedMonth, format: .dateTime.month(.wide).year())
                     .font(AppTypography.sectionTitle)
                     .frame(maxWidth: .infinity)
+                    .contentTransition(.numericText())
 
                 Button {
                     moveMonth(by: 1)
@@ -62,8 +65,10 @@ struct CalendarShellView: View {
             }
 
             Button("calendar.today") {
-                displayedMonth = calendar.dateInterval(of: .month, for: .now)?.start ?? .now
-                selectedDate = calendar.startOfDay(for: .now)
+                withAnimation(AppMotion.content(reduceMotion: reduceMotion)) {
+                    displayedMonth = calendar.dateInterval(of: .month, for: .now)?.start ?? .now
+                    selectedDate = calendar.startOfDay(for: .now)
+                }
             }
             .font(AppTypography.caption)
             .buttonStyle(.bordered)
@@ -144,8 +149,20 @@ struct CalendarShellView: View {
         guard let month = calendar.date(byAdding: .month, value: offset, to: displayedMonth) else {
             return
         }
-        displayedMonth = calendar.dateInterval(of: .month, for: month)?.start ?? month
-        selectedDate = displayedMonth
+        withAnimation(AppMotion.content(reduceMotion: reduceMotion)) {
+            displayedMonth = calendar.dateInterval(of: .month, for: month)?.start ?? month
+            selectedDate = displayedMonth
+        }
+    }
+
+    private var horizontalSwipe: some Gesture {
+        DragGesture(minimumDistance: 36)
+            .onEnded { value in
+                guard abs(value.translation.width) > abs(value.translation.height) * 1.25 else {
+                    return
+                }
+                moveMonth(by: value.translation.width < 0 ? 1 : -1)
+            }
     }
 
     @ViewBuilder
@@ -190,7 +207,8 @@ struct CalendarShellView: View {
             emojiList: store.emojiList(id: task.listID),
             onToggle: { store.toggleCompletion(for: task) },
             onEdit: { onEdit(task) },
-            onDelete: { store.moveToTrash(task) }
+            onDelete: { store.moveToTrash(task) },
+            onReschedule: { store.reschedule(task, to: $0) }
         )
     }
 }
