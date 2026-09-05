@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+
+# Xcode user state
+*.xcuserstate
+xcuserdata/
+
+# Build output
+build/
+DerivedData/
+*.dSYM
+*.dSYM.zip
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# Local developer configuration and secrets
+Configuration/Local.xcconfig
+*.env
+.env.*
+!.env.example
+
+# Supabase local runtime state (when introduced in Phase 4)
+supabase/.branches/
+supabase/.temp/

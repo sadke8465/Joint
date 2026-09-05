@@ -1,0 +1,102 @@
+name: CouplesTodo
+
+options:
+  bundleIdPrefix: com.example
+  createIntermediateGroups: true
+  deploymentTarget:
+    iOS: "18.0"
+  developmentLanguage: en
+  xcodeVersion: "26.0"
+
+configs:
+  Debug: debug
+  Release: release
+
+configFiles:
+  Debug: Configuration/Debug.xcconfig
+  Release: Configuration/Release.xcconfig
+
+packages:
+  Supabase:
+    url: https://github.com/supabase/supabase-swift.git
+    from: 2.54.1
+
+settings:
+  base:
+    CURRENT_PROJECT_VERSION: 1
+    MARKETING_VERSION: 0.1.0
+
+targets:
+  CouplesTodo:
+    type: application
+    platform: iOS
+    sources:
+      - path: CouplesTodo
+    dependencies:
+      - package: Supabase
+        product: Supabase
+    settings:
+      base:
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_PREVIEWS: YES
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Couples Todo
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.productivity
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIRequiresFullScreen: YES
+        PRODUCT_NAME: CouplesTodo
+        SUPPORTS_MACCATALYST: NO
+        SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
+        SWIFT_STRICT_CONCURRENCY: complete
+        TARGETED_DEVICE_FAMILY: 1
+
+  CouplesTodoTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: CouplesTodoTests
+    dependencies:
+      - target: CouplesTodo
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.CouplesTodoTests
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/CouplesTodo.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CouplesTodo"
+
+  CouplesTodoUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: CouplesTodoUITests
+    dependencies:
+      - target: CouplesTodo
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.CouplesTodoUITests
+        TEST_TARGET_NAME: CouplesTodo
+
+schemes:
+  CouplesTodo:
+    build:
+      targets:
+        CouplesTodo: all
+        CouplesTodoTests: [test]
+        CouplesTodoUITests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      gatherCoverageData: true
+      targets:
+        - name: CouplesTodoTests
+        - name: CouplesTodoUITests
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
