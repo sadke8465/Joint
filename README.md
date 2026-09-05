@@ -6,16 +6,21 @@ This repository is the native successor to the historical [`sadke8465/omer_noam`
 
 ## Current status
 
-Phase 0 of [`MIGRATION_PLAN.md`](MIGRATION_PLAN.md) is implemented:
+Phases 0–1 of [`MIGRATION_PLAN.md`](MIGRATION_PLAN.md) are implemented:
 
 - native iPhone-only SwiftUI application target,
 - iOS 18.0 minimum deployment target,
 - Supabase Swift package declaration,
 - unit and UI test targets,
 - reproducible XcodeGen project specification,
-- local signing configuration that stays out of version control.
+- local signing configuration that stays out of version control,
+- semantic color, typography, spacing, card, member, checkbox, motion, and haptic primitives,
+- static Week, List, and Calendar modes backed by deterministic mock content,
+- native task-composer and settings sheets,
+- English and Hebrew localization with verified RTL layout,
+- Dynamic Type and Reduce Motion accommodations.
 
-The app is intentionally a small launch shell at this stage. Product UI starts in Phase 1.
+The next vertical slice is Phase 2: domain models, SwiftData persistence, and complete local task behavior.
 
 ## Requirements
 

@@ -27,3 +27,13 @@ Views must not call Supabase directly. Supabase is the authoritative shared stor
 | Secrets | Never committed; local build overrides use ignored `Local.xcconfig` |
 
 Add a focused note here when a later phase changes one of these decisions or introduces a durable cross-feature convention.
+
+## Phase 1 UI conventions
+
+- The root owns one `AppRouter`; enum-driven sheets avoid parallel presentation flags.
+- Main-mode selection and mock completion state remain local to `MainView` until repositories arrive.
+- Reusable controls consume semantic design tokens instead of feature-specific measurements.
+- Motion goes through `AppMotion` and checks Reduce Motion before animating layout changes.
+- Haptics use native SwiftUI sensory feedback through `AppHaptics`.
+- Member assignment is communicated with an icon and localized label in addition to color.
+- Preview and UI-test fixtures stay deterministic and never connect to Supabase.

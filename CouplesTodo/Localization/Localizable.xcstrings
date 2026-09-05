@@ -1,0 +1,587 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "assignee.me" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Me" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "אני" } }
+      }
+    },
+    "assignee.partner" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Partner" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "בן/בת הזוג" } }
+      }
+    },
+    "assignee.together" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Together" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "ביחד" } }
+      }
+    },
+    "calendar.has_tasks" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Has tasks" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "יש משימות" } }
+      }
+    },
+    "calendar.next_month" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Next month" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "החודש הבא" } }
+      }
+    },
+    "calendar.no_tasks" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "A clear day" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "יום פנוי" } }
+      }
+    },
+    "calendar.no_tasks_description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "There are no tasks planned for this date." } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "אין משימות שמתוכננות לתאריך הזה." } }
+      }
+    },
+    "calendar.no_tasks_value" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No tasks" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "אין משימות" } }
+      }
+    },
+    "calendar.previous_month" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Previous month" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "החודש הקודם" } }
+      }
+    },
+    "calendar.selected_day" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Selected day" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "היום שנבחר" } }
+      }
+    },
+    "calendar.today" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Today" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "היום" } }
+      }
+    },
+    "calendar.weekday.fri" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Fri" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "ו׳" } }
+      }
+    },
+    "calendar.weekday.mon" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mon" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "ב׳" } }
+      }
+    },
+    "calendar.weekday.sat" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sat" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "ש׳" } }
+      }
+    },
+    "calendar.weekday.sun" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sun" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "א׳" } }
+      }
+    },
+    "calendar.weekday.thu" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Thu" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "ה׳" } }
+      }
+    },
+    "calendar.weekday.tue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Tue" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "ג׳" } }
+      }
+    },
+    "calendar.weekday.wed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Wed" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "ד׳" } }
+      }
+    },
+    "composer.add" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Add task" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "הוספת משימה" } }
+      }
+    },
+    "composer.assignee" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Who is it for?" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "למי המשימה?" } }
+      }
+    },
+    "composer.assignee.me" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Me" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "אני" } }
+      }
+    },
+    "composer.assignee.partner" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Partner" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "הזוג" } }
+      }
+    },
+    "composer.assignee.together" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Together" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "ביחד" } }
+      }
+    },
+    "composer.date" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Date" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "תאריך" } }
+      }
+    },
+    "composer.done" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Done" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "סיום" } }
+      }
+    },
+    "composer.emoji_list" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Emoji list" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "רשימת אימוג׳י" } }
+      }
+    },
+    "composer.new_task" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "New task" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "משימה חדשה" } }
+      }
+    },
+    "composer.none" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "None" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "ללא" } }
+      }
+    },
+    "composer.notes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Notes" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "הערות" } }
+      }
+    },
+    "composer.notes_placeholder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Anything worth remembering?" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "משהו שכדאי לזכור?" } }
+      }
+    },
+    "composer.shopping" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Shopping" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "קניות" } }
+      }
+    },
+    "composer.time" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Time" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "שעה" } }
+      }
+    },
+    "composer.title_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Task" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "משימה" } }
+      }
+    },
+    "composer.title_placeholder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "What needs doing?" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "מה צריך לעשות?" } }
+      }
+    },
+    "date.today" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Today" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "היום" } }
+      }
+    },
+    "date.tomorrow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Tomorrow" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "מחר" } }
+      }
+    },
+    "filter.all" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "All" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "הכול" } }
+      }
+    },
+    "filter.mine" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mine" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "שלי" } }
+      }
+    },
+    "filter.partner" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Partner" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "בן/בת הזוג" } }
+      }
+    },
+    "filter.this_week" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "This week" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "השבוע" } }
+      }
+    },
+    "filter.today" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Today" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "היום" } }
+      }
+    },
+    "filter.together" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Together" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "ביחד" } }
+      }
+    },
+    "fixture.couple_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Omer & Noam" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "עומר ונועם" } }
+      }
+    },
+    "fixture.date.september_6" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "September 6" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "6 בספטמבר" } }
+      }
+    },
+    "fixture.date.september_7" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "September 7" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "7 בספטמבר" } }
+      }
+    },
+    "fixture.month" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "September 2026" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "ספטמבר 2026" } }
+      }
+    },
+    "fixture.task.flowers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose the flowers" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "לבחור את הפרחים" } }
+      }
+    },
+    "fixture.task.getaway" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Book a weekend away" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "להזמין סוף שבוע" } }
+      }
+    },
+    "fixture.task.package" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Pick up the package" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "לאסוף את החבילה" } }
+      }
+    },
+    "fixture.task.rsvp" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Send the RSVP" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "לשלוח אישור הגעה" } }
+      }
+    },
+    "fixture.task.venue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Call the venue" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "להתקשר לאולם" } }
+      }
+    },
+    "fixture.task.wine" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Buy wine" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "לקנות יין" } }
+      }
+    },
+    "fixture.time.afternoon" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "3:00 PM" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "15:00" } }
+      }
+    },
+    "fixture.time.evening" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "6:00 PM" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "18:00" } }
+      }
+    },
+    "fixture.week_range" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "September 1–7" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "1–7 בספטמבר" } }
+      }
+    },
+    "list.dated" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Coming up" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "בקרוב" } }
+      }
+    },
+    "list.filters" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Task filters" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "מסנני משימות" } }
+      }
+    },
+    "list.no_matches" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No matching tasks" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "לא נמצאו משימות" } }
+      }
+    },
+    "list.recently_completed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Recently completed" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "הושלמו לאחרונה" } }
+      }
+    },
+    "list.search" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Search tasks" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "חיפוש משימות" } }
+      }
+    },
+    "list.someday" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Someday" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "מתישהו" } }
+      }
+    },
+    "main.mode.calendar" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Calendar" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "לוח שנה" } }
+      }
+    },
+    "main.mode.list" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "List" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "רשימה" } }
+      }
+    },
+    "main.mode.week" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Week" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "שבוע" } }
+      }
+    },
+    "main.open_tasks_format" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%lld open tasks" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "%lld משימות פתוחות" } }
+      }
+    },
+    "main.settings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Profile and settings" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "פרופיל והגדרות" } }
+      }
+    },
+    "settings.calendar" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Calendar" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "לוח שנה" } }
+      }
+    },
+    "settings.language" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Language" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "שפה" } }
+      }
+    },
+    "settings.notifications" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Notifications" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "התראות" } }
+      }
+    },
+    "settings.our_space" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Our space" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "המרחב שלנו" } }
+      }
+    },
+    "settings.phase_note" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Settings become interactive in later migration phases." } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "ההגדרות יהפכו לפעילות בשלבים הבאים של המעבר." } }
+      }
+    },
+    "settings.preferences" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Preferences" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "העדפות" } }
+      }
+    },
+    "settings.two_members" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Two members" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "שני חברים" } }
+      }
+    },
+    "task.add" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Add task" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "הוספת משימה" } }
+      }
+    },
+    "task.completed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Completed" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "הושלמה" } }
+      }
+    },
+    "task.emoji_list" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Emoji list" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "רשימת אימוג׳י" } }
+      }
+    },
+    "task.incomplete" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Incomplete" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "לא הושלמה" } }
+      }
+    },
+    "task.mark_complete" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mark complete" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "סימון כהושלמה" } }
+      }
+    },
+    "task.mark_incomplete" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mark incomplete" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "סימון כלא הושלמה" } }
+      }
+    },
+    "week.current" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "This week" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "השבוע" } }
+      }
+    },
+    "week.done" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Done this week" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "הושלמו השבוע" } }
+      }
+    },
+    "week.next" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Next week" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "השבוע הבא" } }
+      }
+    },
+    "week.previous" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Previous week" } },
+        "he" : { "stringUnit" : { "state" : "translated", "value" : "השבוע הקודם" } }
+      }
+    }
+  },
+  "version" : "1.0"
+}

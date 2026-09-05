@@ -4,7 +4,9 @@ import SwiftUI
 struct CouplesTodoApp: App {
     var body: some Scene {
         WindowGroup {
-            LaunchView()
+            MainView()
+                .tint(AppColors.accent)
+                .preferredColorScheme(.light)
         }
     }
 }
