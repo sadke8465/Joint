@@ -6,7 +6,8 @@ This repository is the native successor to the historical [`sadke8465/omer_noam`
 
 ## Current status
 
-Phases 0–3 of [`MIGRATION_PLAN.md`](MIGRATION_PLAN.md) are implemented:
+Phases 0–3 and the local foundation of Phase 4 in
+[`MIGRATION_PLAN.md`](MIGRATION_PLAN.md) are implemented:
 
 - native iPhone-only SwiftUI application target,
 - iOS 18.0 minimum deployment target,
@@ -29,14 +30,25 @@ Phases 0–3 of [`MIGRATION_PLAN.md`](MIGRATION_PLAN.md) are implemented:
 - explicit accessibility actions for completion, editing, and deletion,
 - English and Hebrew localization with verified RTL layout,
 - Dynamic Type and Reduce Motion accommodations.
+- local Supabase CLI configuration with explicit Data API exposure,
+- relational schemas for profiles, couples, membership, invites, lists, tasks, notification settings, device tokens, and delivery deduplication,
+- row-level security based on database-owned couple membership,
+- server-side two-member, assignment, ownership, and immutable-identity checks,
+- a least-privilege Realtime publication that excludes invite and notification secrets,
+- a reproducible Swift database-type generation script,
+- a transaction-scoped A/B/C cross-couple security specification.
 
-The next vertical slice is Phase 4: provision a fresh Supabase project and add the shared database schema and local CLI workflow.
+The remaining Phase 4 work is to provision and link a fresh hosted Supabase
+project, apply the committed migration, and run the database security
+specification and hosted advisors. A hosted project is never selected or created
+implicitly.
 
 ## Requirements
 
 - Xcode 26.6 or newer
 - iOS 18.0 or newer
 - XcodeGen 2.45 or newer only when regenerating the checked-in project
+- Supabase CLI 2.116 or newer and a Docker-compatible runtime for local backend work
 
 ## First run
 
@@ -57,3 +69,4 @@ For a compile-and-build check without launching a Simulator, build the scheme fo
 
 - [`MIGRATION_PLAN.md`](MIGRATION_PLAN.md) — product and technical migration specification
 - [`docs/architecture/README.md`](docs/architecture/README.md) — initial architecture boundaries and decision record
+- [`supabase/README.md`](supabase/README.md) — local database, generated types, and security-specification workflow

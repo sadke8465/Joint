@@ -1,0 +1,4 @@
+-- Intentionally empty.
+--
+-- Development fixtures belong in explicit test transactions so local resets do
+-- not create accounts or shared data that could be mistaken for real records.

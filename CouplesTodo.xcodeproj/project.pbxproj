@@ -18,6 +18,7 @@
 		335DBD7CA12B56F1D9F788A9 /* TaskCheckbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45398C6C96741294B3CB30C4 /* TaskCheckbox.swift */; };
 		343E7B43448FB4963DD0FCCB /* LocalIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12FE135008A98290EF245A6A /* LocalIdentity.swift */; };
 		373FCF0F3A73B4A6226F93E0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52527F9CFC00A05DD1878594 /* Assets.xcassets */; };
+		3B52B91F1EE3C4932AED934F /* DatabaseTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98D6790AF7C617F5240EF6E2 /* DatabaseTypes.swift */; };
 		40E042C3372BBA2495642392 /* TrashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84111A5F9C0C2DC0174AC88C /* TrashView.swift */; };
 		4D5A0BA1A748603C46994D2E /* EmojiListRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D10341E4FE40246AB902CE /* EmojiListRepository.swift */; };
 		4E113F2BC49C7A6BB98F4D9F /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8171C9501BE759A393FCB632 /* AppRouter.swift */; };
@@ -94,6 +95,7 @@
 		84111A5F9C0C2DC0174AC88C /* TrashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashView.swift; sourceTree = "<group>"; };
 		974E0CAF2173F4709E9717DB /* CouplesTodoUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = CouplesTodoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		97BB271BCE20177B8EEB3D66 /* TaskSentenceFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskSentenceFormatter.swift; sourceTree = "<group>"; };
+		98D6790AF7C617F5240EF6E2 /* DatabaseTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseTypes.swift; sourceTree = "<group>"; };
 		994EE06EB8FF0BFCF0F6F11C /* WeekShellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekShellView.swift; sourceTree = "<group>"; };
 		9B6C4F1B3AB07F8D13E8A434 /* TaskComposerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskComposerView.swift; sourceTree = "<group>"; };
 		9F68FFF63246268844D67EE4 /* AppMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMotion.swift; sourceTree = "<group>"; };
@@ -179,6 +181,7 @@
 			isa = PBXGroup;
 			children = (
 				B98B15C94EC23AC3AFBCF96B /* Local */,
+				5C9C8F68BF379A34FE684975 /* Remote */,
 				143149E57A951E67F09DD41C /* Repositories */,
 			);
 			path = Data;
@@ -270,6 +273,14 @@
 			path = Identity;
 			sourceTree = "<group>";
 		};
+		5C9C8F68BF379A34FE684975 /* Remote */ = {
+			isa = PBXGroup;
+			children = (
+				8BAC0FCCCC6573B3DA5CB067 /* Generated */,
+			);
+			path = Remote;
+			sourceTree = "<group>";
+		};
 		5D2737D31AFA4794F49C333E /* App */ = {
 			isa = PBXGroup;
 			children = (
@@ -303,6 +314,14 @@
 				84111A5F9C0C2DC0174AC88C /* TrashView.swift */,
 			);
 			path = Trash;
+			sourceTree = "<group>";
+		};
+		8BAC0FCCCC6573B3DA5CB067 /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				98D6790AF7C617F5240EF6E2 /* DatabaseTypes.swift */,
+			);
+			path = Generated;
 			sourceTree = "<group>";
 		};
 		942A04E352EE95C0CDB45DFB /* Settings */ = {
@@ -568,6 +587,7 @@
 				EBF4310A667A6EB9E7E255F8 /* ArchiveView.swift in Sources */,
 				9845BBDAE5D29A035F012EE7 /* CalendarShellView.swift in Sources */,
 				ED5C2FD5BE7B745AA94E284D /* CouplesTodoApp.swift in Sources */,
+				3B52B91F1EE3C4932AED934F /* DatabaseTypes.swift in Sources */,
 				5E86A338E84B33043B579666 /* EmojiList.swift in Sources */,
 				4D5A0BA1A748603C46994D2E /* EmojiListRepository.swift in Sources */,
 				5AA98B36DC52059AB2470546 /* EmojiListsView.swift in Sources */,

@@ -64,3 +64,14 @@ Phase 2 deliberately does not add backend calls, authentication, or synchronizat
 - Task menus expose quick Today, Tomorrow, and Someday rescheduling while the editor remains the complete route for field changes.
 - The task card keeps essential controls visible and adds equivalent accessibility actions for complete, edit, and delete.
 - Keyboard submit in a new-task composer persists the task, resets every field to the documented defaults, and retains title focus for rapid entry. The primary button still saves and closes.
+
+## Phase 4 backend conventions
+
+- `public.couple_members` is the sole source of couple authorization. Editable authentication metadata is never consulted for access control.
+- Clients may create/update shared lists and tasks, soft-delete them through `deleted_at`, and manage only their own profile, notification preferences, and device tokens.
+- Couple creation, membership changes, invitation mutation, and delivery-ledger writes remain server-controlled by withholding client table privileges. Future Edge Functions or narrowly scoped RPCs must preserve those boundaries.
+- Explicit table grants complement RLS. Anonymous clients receive no access, and invite hashes are excluded even from member-facing column grants.
+- Security-definer helpers live in the unexposed `private` schema, use an empty search path, return only authorization booleans or enforce row invariants, and are not directly executable by anonymous clients.
+- Task identity, couple, creator, and creation timestamp are immutable. Database triggers verify that creators, person assignees, completers, and selected lists belong to the task's couple.
+- Realtime publishes only profiles, couples, members, lists, and tasks. Device tokens, invites, preferences, and delivery records are never broadcast.
+- Local resets apply committed migrations and an intentionally empty seed. A/B/C security fixtures run inside a transaction and roll back completely.
