@@ -4,7 +4,6 @@ struct ModeSwitcher: View {
     @Binding var selection: MainMode
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         HStack(spacing: AppSpacing.xSmall) {
@@ -14,39 +13,28 @@ struct ModeSwitcher: View {
                         selection = mode
                     }
                 } label: {
-                    modeLabel(for: mode)
-                        .frame(maxWidth: .infinity)
-                        .frame(minHeight: 44)
+                    Image(systemName: mode.iconName)
+                        .font(.system(size: 16, weight: .semibold))
+                        .frame(width: 38, height: 38)
                         .foregroundStyle(
-                            selection == mode ? AppColors.primaryText : AppColors.secondaryText
+                            selection == mode ? AppColors.primaryText : AppColors.tertiaryText
                         )
                         .background {
                             if selection == mode {
-                                Capsule()
+                                RoundedRectangle(cornerRadius: AppRadius.control, style: .continuous)
                                     .fill(AppColors.surface)
                                     .shadow(color: .black.opacity(0.06), radius: 5, y: 2)
                             }
                         }
                 }
                 .buttonStyle(.plain)
+                .frame(minWidth: 44, minHeight: 44)
                 .accessibilityLabel(mode.titleKey)
                 .accessibilityAddTraits(selection == mode ? .isSelected : [])
                 .accessibilityIdentifier("mode-\(mode.rawValue)")
             }
         }
         .padding(AppSpacing.xSmall)
-        .background(AppColors.controlBackground, in: Capsule())
-    }
-
-    @ViewBuilder
-    private func modeLabel(for mode: MainMode) -> some View {
-        if dynamicTypeSize.isAccessibilitySize {
-            Image(systemName: mode.iconName)
-                .font(.body.weight(.semibold))
-        } else {
-            Label(mode.titleKey, systemImage: mode.iconName)
-                .font(AppTypography.caption)
-                .lineLimit(1)
-        }
+        .background(AppColors.groupedBackground, in: RoundedRectangle(cornerRadius: AppRadius.card))
     }
 }

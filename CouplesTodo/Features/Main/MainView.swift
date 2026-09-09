@@ -1,41 +1,60 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct MainView: View {
     let store: TaskStore
 
     @State private var router = AppRouter()
-    @State private var selectedMode = MainMode.defaultMode
+    @State private var listState = ListViewState()
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         @Bindable var router = router
 
-        NavigationStack {
-            VStack(spacing: 0) {
-                MainHeader(
-                    selectedMode: $selectedMode,
-                    openTaskCount: store.activeTasks.count
-                )
-                .padding(.horizontal, AppSpacing.large)
-                .padding(.top, AppSpacing.small)
-                .padding(.bottom, AppSpacing.large)
+        VStack(spacing: 0) {
+            MainHeader(openTaskCount: store.activeTasks.count)
 
-                content
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .transition(.opacity)
+            if router.selectedMode == .list {
+                ListFilterToolbar(
+                    store: store,
+                    state: listState,
+                    onAdd: { defaults in
+                        router.presentedSheet = .quickAdd(defaults)
+                    }
+                )
+                .transition(.opacity.combined(with: .move(edge: .top)))
             }
-            .background(AppColors.background.ignoresSafeArea())
-            .safeAreaInset(edge: .bottom) {
-                addTaskButton
+
+            Divider()
+                .overlay(AppColors.border.opacity(0.65))
+
+            TabView(selection: $router.selectedMode) {
+                ListShellView(store: store, state: listState, onEdit: editTask)
+                    .tag(MainMode.list)
+
+                WeekShellView(
+                    store: store,
+                    onOpenDay: { date in
+                        router.presentedSheet = .dayDetails(date)
+                    }
+                )
+                .tag(MainMode.week)
+
+                CalendarShellView(store: store, onEdit: editTask)
+                    .tag(MainMode.calendar)
             }
-            .overlay(alignment: .bottom) {
-                undoBanner
-                    .padding(.horizontal, AppSpacing.large)
-                    .padding(.bottom, 78)
-            }
-            .toolbar(.hidden, for: .navigationBar)
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .animation(
+                reduceMotion ? nil : AppMotion.selection(reduceMotion: false),
+                value: router.selectedMode
+            )
+        }
+        .background(AppColors.canvas.ignoresSafeArea())
+        .overlay(alignment: .bottom) {
+            undoBanner
+                .padding(.horizontal, AppSpacing.screenMargin)
+                .padding(.bottom, AppSpacing.large)
         }
         .sheet(item: $router.presentedSheet) { destination in
             sheet(for: destination)
@@ -51,38 +70,7 @@ struct MainView: View {
         } message: {
             Text(store.errorMessage ?? "")
         }
-        .accessibilityIdentifier("main-shell")
-    }
-
-    @ViewBuilder
-    private var content: some View {
-        switch selectedMode {
-        case .week:
-            WeekShellView(store: store, onEdit: editTask)
-        case .list:
-            ListShellView(store: store, onEdit: editTask)
-        case .calendar:
-            CalendarShellView(store: store, onEdit: editTask)
-        }
-    }
-
-    private var addTaskButton: some View {
-        Button {
-            router.presentedSheet = .taskComposer(taskID: nil)
-        } label: {
-            Label("task.add", systemImage: "plus")
-                .font(AppTypography.body.weight(.semibold))
-                .frame(maxWidth: .infinity)
-                .frame(minHeight: 52)
-                .foregroundStyle(.white)
-                .background(AppColors.accent, in: Capsule())
-        }
-        .buttonStyle(.plain)
-        .padding(.horizontal, AppSpacing.large)
-        .padding(.top, AppSpacing.small)
-        .padding(.bottom, AppSpacing.small)
-        .background(AppColors.background.opacity(0.96))
-        .accessibilityIdentifier("add-task")
+        .preferredColorScheme(.light)
     }
 
     @ViewBuilder
@@ -101,12 +89,12 @@ struct MainView: View {
                     }
                 }
                 .font(AppTypography.metadata.weight(.bold))
-                .foregroundStyle(AppColors.accentSoft)
+                .foregroundStyle(Color.white)
             }
             .padding(.horizontal, AppSpacing.large)
-            .frame(minHeight: 48)
+            .frame(minHeight: 52)
             .background(AppColors.primaryText, in: Capsule())
-            .shadow(color: Color.black.opacity(0.16), radius: 10, y: 4)
+            .shadow(color: Color.black.opacity(0.16), radius: 14, y: 8)
             .transition(.move(edge: .bottom).combined(with: .opacity))
         }
     }
@@ -114,14 +102,26 @@ struct MainView: View {
     @ViewBuilder
     private func sheet(for destination: SheetDestination) -> some View {
         switch destination {
-        case .taskComposer(let taskID):
+        case .quickAdd(let defaults):
+            QuickAddTaskView(store: store, defaults: defaults)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(AppRadius.sheet)
+        case .taskEditor(let taskID):
             TaskComposerView(store: store, taskID: taskID)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(AppRadius.sheet)
+        case .dayDetails(let date):
+            DayTasksSheet(store: store, date: date)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
-        case .settings:
+                .presentationCornerRadius(AppRadius.sheet)
+        case .more:
             SettingsShellView(store: store)
-                .presentationDetents([.medium, .large])
+                .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
+                .presentationCornerRadius(AppRadius.sheet)
         }
     }
 
@@ -133,12 +133,12 @@ struct MainView: View {
     }
 
     private func editTask(_ task: TaskItem) {
-        router.presentedSheet = .taskComposer(taskID: task.id)
+        router.presentedSheet = .taskEditor(taskID: task.id)
     }
 }
 
 #Preview("English") {
-    let environment = AppEnvironment.preview()
+    let environment = AppEnvironment.preview(populated: true)
     MainView(store: environment.taskStore)
         .modelContainer(environment.modelContainer)
         .environment(\.locale, Locale(identifier: "en_US"))
@@ -146,7 +146,7 @@ struct MainView: View {
 }
 
 #Preview("Hebrew RTL") {
-    let environment = AppEnvironment.preview()
+    let environment = AppEnvironment.preview(populated: true)
     MainView(store: environment.taskStore)
         .modelContainer(environment.modelContainer)
         .environment(\.locale, Locale(identifier: "he_IL"))

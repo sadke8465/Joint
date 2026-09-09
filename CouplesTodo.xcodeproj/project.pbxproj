@@ -84,16 +84,16 @@
 		45398C6C96741294B3CB30C4 /* TaskCheckbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskCheckbox.swift; sourceTree = "<group>"; };
 		4ADF497EDCE59979D04B765B /* EmojiListsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiListsView.swift; sourceTree = "<group>"; };
 		4BCE52A21472BA1F938F3ECB /* LocalStoreFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStoreFactory.swift; sourceTree = "<group>"; };
-		5195FA4FA70C31431AE06813 /* CouplesTodoTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = CouplesTodoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5195FA4FA70C31431AE06813 /* CouplesTodoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CouplesTodoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		52527F9CFC00A05DD1878594 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		52C8CA421279EF1CD1BBC0B6 /* TaskDraft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDraft.swift; sourceTree = "<group>"; };
 		5C863EDC2CCB1DC14AFFEDFE /* TaskStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskStore.swift; sourceTree = "<group>"; };
-		633B40A2DA42D1792C1745A8 /* CouplesTodo.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CouplesTodo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		633B40A2DA42D1792C1745A8 /* CouplesTodo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CouplesTodo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6DB9D36CF412FBCA3CC712F3 /* CouplesTodoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CouplesTodoApp.swift; sourceTree = "<group>"; };
 		7A86085026E2C511691C1003 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		8171C9501BE759A393FCB632 /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
 		84111A5F9C0C2DC0174AC88C /* TrashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashView.swift; sourceTree = "<group>"; };
-		974E0CAF2173F4709E9717DB /* CouplesTodoUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = CouplesTodoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		974E0CAF2173F4709E9717DB /* CouplesTodoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CouplesTodoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		97BB271BCE20177B8EEB3D66 /* TaskSentenceFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskSentenceFormatter.swift; sourceTree = "<group>"; };
 		98D6790AF7C617F5240EF6E2 /* DatabaseTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseTypes.swift; sourceTree = "<group>"; };
 		994EE06EB8FF0BFCF0F6F11C /* WeekShellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekShellView.swift; sourceTree = "<group>"; };
@@ -520,7 +520,6 @@
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					1015DFC32B5B03ABA11C1E1F = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 					1D15B2AA9168DF9E0FB73654 = {
@@ -705,6 +704,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = B3X5JXT7NJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Couples Todo";
@@ -804,6 +804,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = B3X5JXT7NJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Couples Todo";

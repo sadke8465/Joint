@@ -31,12 +31,15 @@ Add a focused note here when a later phase changes one of these decisions or int
 ## Phase 1 UI conventions
 
 - The root owns one `AppRouter`; enum-driven sheets avoid parallel presentation flags.
-- Main-mode selection and mock completion state remain local to `MainView` until repositories arrive.
+- `AppRouter` owns List/Week/Calendar `MainMode` selection and one `SheetDestination`. List is the fresh-launch default.
+- The root renders a fixed couple header, mode switcher, and List-only toolbar above one scrolling content region. A selection-bound `TabView` is used only to keep each mode mounted; its native bottom bar is hidden.
+- More owns its own `NavigationStack` and typed routes to Archive, Emoji Lists, and Trash. Root modes do not introduce independent navigation stacks.
+- The shell hierarchy is pinned to web reference commit `62f3a15f9a272fd9a8b2815ddb407cc61d617b66`; colors, typography, spacing, cards, motion, and accessibility remain native.
 - Reusable controls consume semantic design tokens instead of feature-specific measurements.
 - Motion goes through `AppMotion` and checks Reduce Motion before animating layout changes.
 - Haptics use native SwiftUI sensory feedback through `AppHaptics`.
 - Member assignment is communicated with an icon and localized label in addition to color.
-- Preview and UI-test fixtures stay deterministic and never connect to Supabase.
+- Preview and UI-test fixtures stay deterministic and never connect to Supabase. UI tests always launch an isolated in-memory store.
 
 ## Phase 2 local-domain conventions
 
@@ -44,7 +47,7 @@ Add a focused note here when a later phase changes one of these decisions or int
 - `StoredTask` and `StoredEmojiList` are the only SwiftData model classes. Stored enum values use raw strings so the domain layer remains independent from persistence details.
 - One root `ModelContainer` owns the on-device store. Its main context is passed to repository implementations when the app environment is created.
 - Views never fetch or mutate SwiftData models. `TaskStore` exposes observable domain values and delegates writes to `TaskRepository` and `EmojiListRepository`.
-- Repository writes explicitly save before the store republishes a fresh projection. This keeps Week, List, Calendar, Archive, and Trash consistent after every mutation.
+- Repository writes explicitly save before the store republishes a fresh projection. This keeps List, Week, Calendar, Archive, and Trash consistent after every mutation.
 - Deletion is soft by default. The task receives a deletion timestamp, remains recoverable in Trash, and can be restored immediately from the six-second undo banner. Permanent deletion is isolated to the Trash screen and requires confirmation.
 - The local prototype uses stable placeholder identifiers for the couple and its two members. Authentication will replace those values without changing task assignment invariants.
 - Person assignment always includes a member identifier; together assignment always clears it. A missing due date represents Someday, and a due time is never retained without a due date.
@@ -55,15 +58,15 @@ Phase 2 deliberately does not add backend calls, authentication, or synchronizat
 
 ## Phase 3 presentation conventions
 
-- Week data is derived from one selected week boundary. Active tasks are grouped by day and then by assignment in a stable Me, Partner, Together order.
+- Week data is derived from one locale-aware selected week boundary. Active tasks are grouped into tappable day cards and then by assignment in a stable Me, Partner, Together order.
 - `TaskSentenceFormatter` owns deterministic sentence generation. It uses localized templates plus Foundation list formatting, works offline, and never calls a generative service.
 - The local prototype uses neutral role-first copy instead of inventing member names or Hebrew grammatical gender. Profile-backed names and grammar preferences arrive with authentication and profile phases.
 - The current week surfaces overdue tasks from earlier dates in a separate section. A date-only task becomes overdue after its calendar day; a timed task becomes overdue after its exact local due time.
 - Completed-this-week is based on `completedAt`, not the task's due date, and stays collapsed so completed work does not dominate the primary view.
-- Week and Calendar keep visible previous/next buttons and also accept deliberate horizontal drags. Vertical scrolling wins unless horizontal movement clearly dominates, and navigation animations honor Reduce Motion.
+- Week uses a compact Previous/Current/Next range menu and accepts deliberate horizontal drags. Calendar keeps native month controls and selected-date behavior. Navigation animations honor Reduce Motion.
 - Task menus expose quick Today, Tomorrow, and Someday rescheduling while the editor remains the complete route for field changes.
-- The task card keeps essential controls visible and adds equivalent accessibility actions for complete, edit, and delete.
-- Keyboard submit in a new-task composer persists the task, resets every field to the documented defaults, and retains title focus for rapid entry. The primary button still saves and closes.
+- Task cards split summary, metadata, inline editing, and actions. Each containing view owns at most one expanded task identifier; all mutations still flow through `TaskDraft` and `TaskStore.update`.
+- Keyboard submit in compact quick add persists the task, resets to the active filter defaults, and retains title focus for rapid entry. More Details keeps the unsaved draft in the same navigation stack; the primary button saves and closes.
 
 ## Phase 4 backend conventions
 

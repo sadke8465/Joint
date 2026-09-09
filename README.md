@@ -1,8 +1,8 @@
 # Couples Todo for iOS
 
-A native SwiftUI to-do app designed for exactly two people. The shared week is the primary experience, with personal assignment, shared completion, offline-tolerant local state, and targeted notifications planned for v1.
+A native SwiftUI to-do app designed for exactly two people. Its mobile shell follows the web product's List/Week/Calendar structure while retaining native iOS interaction, accessibility, and visual design.
 
-This repository is the native successor to the historical [`sadke8465/omer_noam`](https://github.com/sadke8465/omer_noam) web prototype. The prototype remains a product and visual reference during the early migration phases; its implementation is not copied into this codebase.
+This repository is the native successor to [`sadke8465/omer_noam`](https://github.com/sadke8465/omer_noam). Shell and component hierarchy parity is pinned to web commit [`62f3a15`](https://github.com/sadke8465/omer_noam/commit/62f3a15f9a272fd9a8b2815ddb407cc61d617b66); implementation remains native SwiftUI.
 
 ## Current status
 
@@ -16,14 +16,16 @@ Phases 0–3 and the local foundation of Phase 4 in
 - reproducible XcodeGen project specification,
 - local signing configuration that stays out of version control,
 - semantic color, typography, spacing, card, member, checkbox, motion, and haptic primitives,
-- live Week, List, and Calendar modes backed by the same persisted task store,
+- a fixed couple header, List/Week/Calendar switcher, and one independently scrolling content region,
+- a hidden selection container that preserves each mode's session state without showing a bottom tab bar,
+- List-first launch behavior with a List-only filter and quick-add toolbar,
 - native create and edit flows for title, notes, assignment, date, time, and emoji list,
 - local create, edit, complete, reopen, soft-delete, undo, restore, and permanent-delete behavior,
-- searchable assignment, date, and emoji-list filters,
-- Archive, Trash, and emoji-list management screens,
+- searchable assignment, date, and emoji-list filters with filter-aware creation defaults,
+- Archive, Trash, and emoji-list management in the More sheet,
 - SwiftData persistence behind repository boundaries,
-- assignee-grouped week sections with deterministic localized summaries,
-- horizontal week and month navigation with Reduce Motion support,
+- assignee-grouped week day cards with deterministic localized summaries and editable day details,
+- horizontal week and month navigation with locale-aware boundaries and Reduce Motion support,
 - overdue visibility and completed-this-week history,
 - quick Today, Tomorrow, and Someday rescheduling,
 - rapid consecutive task entry from the keyboard,

@@ -1,0 +1,54 @@
+name: ComponentLab
+
+options:
+  bundleIdPrefix: com.example
+  createIntermediateGroups: true
+  deploymentTarget:
+    iOS: "18.0"
+  developmentLanguage: en
+  xcodeVersion: "26.0"
+
+configs:
+  Debug: debug
+  Release: release
+
+settings:
+  base:
+    CURRENT_PROJECT_VERSION: 1
+    MARKETING_VERSION: 0.1.0
+
+targets:
+  ComponentLab:
+    type: application
+    platform: iOS
+    sources:
+      - path: ComponentLab
+    settings:
+      base:
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_PREVIEWS: YES
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Component Lab
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.ComponentLab
+        PRODUCT_NAME: ComponentLab
+        SUPPORTS_MACCATALYST: NO
+        SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
+        SWIFT_STRICT_CONCURRENCY: complete
+        SWIFT_VERSION: 6.0
+        TARGETED_DEVICE_FAMILY: 1
+
+schemes:
+  ComponentLab:
+    build:
+      targets:
+        ComponentLab: all
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

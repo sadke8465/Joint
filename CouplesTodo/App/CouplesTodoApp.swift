@@ -4,7 +4,7 @@ import SwiftData
 @main
 @MainActor
 struct CouplesTodoApp: App {
-    private let environment = AppEnvironment.live()
+    private let environment = AppEnvironment.app()
 
     var body: some Scene {
         WindowGroup {

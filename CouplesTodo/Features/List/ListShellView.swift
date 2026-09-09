@@ -1,148 +1,240 @@
+import Observation
 import SwiftUI
 
-private enum AssignmentFilter: String, CaseIterable, Identifiable {
-    case all
-    case mine
-    case partner
-    case together
-
-    var id: String { rawValue }
-
-    var titleKey: LocalizedStringKey {
-        switch self {
-        case .all: "filter.all"
-        case .mine: "filter.mine"
-        case .partner: "filter.partner"
-        case .together: "filter.together"
-        }
-    }
+@MainActor
+@Observable
+final class ListViewState {
+    var primaryFilter: TaskFilter = .all
+    var dateFilter: DateFilter = .all
+    var searchText = ""
+    var showsSearch = false
+    var showsSomeday = true
+    var showsCompleted = false
+    var expandedTaskID: UUID?
 }
 
-private enum DateFilter: String, CaseIterable, Identifiable {
-    case all
-    case today
-    case thisWeek
-    case overdue
-
-    var id: String { rawValue }
-
-    var titleKey: LocalizedStringKey {
-        switch self {
-        case .all: "filter.any_date"
-        case .today: "filter.today"
-        case .thisWeek: "filter.this_week"
-        case .overdue: "filter.overdue"
-        }
-    }
-
-    var iconName: String {
-        switch self {
-        case .all: "calendar"
-        case .today: "sun.max"
-        case .thisWeek: "calendar.badge.clock"
-        case .overdue: "exclamationmark.calendar"
-        }
-    }
-}
-
-struct ListShellView: View {
+struct ListFilterToolbar: View {
     let store: TaskStore
-    let onEdit: (TaskItem) -> Void
-
-    @State private var assignmentFilter: AssignmentFilter = .all
-    @State private var dateFilter: DateFilter = .all
-    @State private var selectedListID: UUID?
-    @State private var searchText = ""
-    @State private var showsCompleted = false
-
-    private var calendar: Calendar { .current }
+    let state: ListViewState
+    let onAdd: (TaskCreationDefaults) -> Void
 
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: AppSpacing.xLarge) {
-                filterBar
-                taskSection(title: "list.dated", tasks: datedTasks)
-                taskSection(title: "list.someday", tasks: somedayTasks)
-                completedTasks
-            }
-            .padding(.horizontal, AppSpacing.large)
-            .padding(.bottom, AppSpacing.xxLarge)
-        }
-        .scrollIndicators(.hidden)
-        .searchable(text: $searchText, prompt: Text("list.search"))
-        .accessibilityIdentifier("list-screen")
-    }
+        @Bindable var state = state
 
-    private var filterBar: some View {
-        ScrollView(.horizontal) {
+        VStack(spacing: AppSpacing.small) {
             HStack(spacing: AppSpacing.small) {
-                ForEach(AssignmentFilter.allCases) { filter in
-                    filterButton(
-                        title: filter.titleKey,
-                        isSelected: assignmentFilter == filter
-                    ) {
-                        assignmentFilter = filter
+                ScrollView(.horizontal) {
+                    HStack(spacing: AppSpacing.small) {
+                        filterButton(.all, title: "filter.all")
+                        filterButton(.assignee(.together), title: "filter.together")
+                        filterButton(.assignee(.me), title: "filter.mine")
+                        filterButton(.assignee(.partner), title: "filter.partner")
+
+                        ForEach(store.emojiLists) { list in
+                            filterButton(
+                                .emojiList(list.id),
+                                title: LocalizedStringKey("\(list.emoji) \(list.title)")
+                            )
+                        }
                     }
-                    .accessibilityIdentifier("filter-\(filter.rawValue)")
+                    .padding(.vertical, 1)
                 }
+                .scrollIndicators(.hidden)
 
                 Menu {
-                    Picker("list.date_filter", selection: $dateFilter) {
+                    Button {
+                        state.showsSearch.toggle()
+                    } label: {
+                        Label("list.search", systemImage: "magnifyingglass")
+                    }
+
+                    Picker("list.date_filter", selection: $state.dateFilter) {
                         ForEach(DateFilter.allCases) { filter in
                             Label(filter.titleKey, systemImage: filter.iconName)
                                 .tag(filter)
                         }
                     }
                 } label: {
-                    Label(dateFilter.titleKey, systemImage: dateFilter.iconName)
-                        .font(AppTypography.caption)
-                        .foregroundStyle(dateFilter == .all ? AppColors.secondaryText : .white)
-                        .padding(.horizontal, AppSpacing.medium)
-                        .frame(minHeight: 36)
-                        .background(dateFilter == .all ? AppColors.surface : AppColors.accent, in: Capsule())
+                    Image(
+                        systemName: state.dateFilter == .all
+                            ? "line.3.horizontal.decrease"
+                            : "line.3.horizontal.decrease.circle.fill"
+                    )
+                    .font(.system(size: 17, weight: .semibold))
+                    .frame(width: 44, height: 44)
+                    .background(AppColors.groupedBackground, in: Circle())
                 }
+                .foregroundStyle(
+                    state.dateFilter == .all ? AppColors.secondaryText : AppColors.accent
+                )
+                .accessibilityLabel(Text("list.filters"))
+                .accessibilityIdentifier("advanced-filters")
 
-                ForEach(store.emojiLists) { list in
-                    Button {
-                        selectedListID = selectedListID == list.id ? nil : list.id
-                    } label: {
-                        Text("\(list.emoji) \(list.title)")
-                            .font(AppTypography.caption)
-                            .foregroundStyle(selectedListID == list.id ? .white : AppColors.secondaryText)
-                            .padding(.horizontal, AppSpacing.medium)
-                            .frame(minHeight: 36)
-                            .background(selectedListID == list.id ? AppColors.accent : AppColors.surface, in: Capsule())
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityAddTraits(selectedListID == list.id ? .isSelected : [])
+                Button {
+                    onAdd(state.primaryFilter.creationDefaults)
+                } label: {
+                    Image(systemName: "plus")
                 }
+                .buttonStyle(AppCircularButtonStyle(size: 44))
+                .accessibilityLabel(Text("task.add"))
+                .accessibilityIdentifier("add-task")
             }
-            .padding(.vertical, 1)
+
+            if state.showsSearch {
+                HStack(spacing: AppSpacing.small) {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundStyle(AppColors.tertiaryText)
+
+                    TextField("list.search", text: $state.searchText)
+                        .textInputAutocapitalization(.never)
+                        .submitLabel(.search)
+                        .accessibilityIdentifier("task-search")
+
+                    Button {
+                        state.searchText = ""
+                        state.showsSearch = false
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .frame(width: 44, height: 44)
+                    }
+                    .foregroundStyle(AppColors.tertiaryText)
+                    .accessibilityLabel(Text("action.cancel"))
+                }
+                .font(AppTypography.body)
+                .padding(.leading, AppSpacing.medium)
+                .background(AppColors.surface, in: Capsule())
+                .overlay {
+                    Capsule().strokeBorder(AppColors.border.opacity(0.72), lineWidth: 1)
+                }
+                .transition(.move(edge: .top).combined(with: .opacity))
+            }
         }
-        .scrollIndicators(.hidden)
-        .accessibilityLabel(Text("list.filters"))
+        .padding(.horizontal, AppSpacing.screenMargin)
+        .padding(.vertical, AppSpacing.small)
+        .background(AppColors.canvas)
     }
 
-    private var completedTasks: some View {
-        DisclosureGroup(isExpanded: $showsCompleted) {
-            if filteredCompletedTasks.isEmpty {
-                Text("archive.empty")
-                    .font(AppTypography.body)
-                    .foregroundStyle(AppColors.secondaryText)
-                    .padding(.top, AppSpacing.small)
+    private func filterButton(_ filter: TaskFilter, title: LocalizedStringKey) -> some View {
+        Button {
+            state.primaryFilter = filter
+        } label: {
+            Text(title)
+        }
+        .buttonStyle(
+            AppPillButtonStyle(
+                isSelected: state.primaryFilter == filter,
+                tint: filterTint(filter)
+            )
+        )
+        .accessibilityAddTraits(state.primaryFilter == filter ? .isSelected : [])
+        .accessibilityIdentifier("filter-\(filter.id)")
+    }
+
+    private func filterTint(_ filter: TaskFilter) -> Color {
+        switch filter {
+        case .all: AppColors.primaryText
+        case .assignee(let style): style.color
+        case .emojiList: AppColors.violet
+        }
+    }
+}
+
+struct ListShellView: View {
+    let store: TaskStore
+    let state: ListViewState
+    let onEdit: (TaskItem) -> Void
+
+    private var calendar: Calendar { .current }
+
+    var body: some View {
+        @Bindable var state = state
+
+        List {
+            if filteredTasks.isEmpty && filteredCompletedTasks.isEmpty {
+                noResultsRow
             } else {
-                ForEach(filteredCompletedTasks.prefix(5)) { task in
-                    taskCard(task)
-                        .padding(.top, AppSpacing.small)
+                ForEach(datedTasks) { task in
+                    taskRow(task)
+                }
+
+                if !somedayTasks.isEmpty {
+                    Section {
+                        DisclosureGroup(isExpanded: $state.showsSomeday) {
+                            ForEach(somedayTasks) { task in
+                                taskRow(task)
+                            }
+                        } label: {
+                            sectionLabel("list.someday", count: somedayTasks.count)
+                        }
+                        .tint(AppColors.secondaryText)
+                        .listRowBackground(AppColors.canvas)
+                        .listRowSeparator(.hidden)
+                    }
+                }
+
+                if !filteredCompletedTasks.isEmpty {
+                    Section {
+                        DisclosureGroup(isExpanded: $state.showsCompleted) {
+                            ForEach(filteredCompletedTasks) { task in
+                                taskRow(task)
+                            }
+                        } label: {
+                            sectionLabel("list.recently_completed", count: filteredCompletedTasks.count)
+                        }
+                        .tint(AppColors.secondaryText)
+                        .listRowBackground(AppColors.canvas)
+                        .listRowSeparator(.hidden)
+                    }
                 }
             }
-        } label: {
-            Text("list.recently_completed")
-                .font(AppTypography.sectionTitle)
-                .foregroundStyle(AppColors.secondaryText)
         }
-        .tint(AppColors.secondaryText)
-        .appCard()
+        .listStyle(.plain)
+        .environment(\.defaultMinListRowHeight, 1)
+        .scrollContentBackground(.hidden)
+        .background(AppColors.canvas)
+        .accessibilityIdentifier("list-screen")
+    }
+
+    private var noResultsRow: some View {
+        AppEmptyState(
+            title: "list.no_matches",
+            systemImage: "line.3.horizontal.decrease.circle",
+            description: "week.no_tasks_description",
+            tint: AppColors.violet,
+            iconForeground: AppColors.primaryText
+        )
+        .listRowInsets(
+            EdgeInsets(
+                top: AppSpacing.large,
+                leading: AppSpacing.screenMargin,
+                bottom: AppSpacing.large,
+                trailing: AppSpacing.screenMargin
+            )
+        )
+        .listRowBackground(AppColors.canvas)
+        .listRowSeparator(.hidden)
+    }
+
+    private func sectionLabel(_ title: LocalizedStringKey, count: Int) -> some View {
+        HStack(spacing: AppSpacing.small) {
+            Rectangle()
+                .fill(AppColors.border)
+                .frame(height: 1)
+
+            Text(title)
+                .font(AppTypography.caption)
+                .foregroundStyle(AppColors.secondaryText)
+                .lineLimit(1)
+
+            Text("\(count)")
+                .font(AppTypography.caption)
+                .foregroundStyle(AppColors.tertiaryText)
+
+            Rectangle()
+                .fill(AppColors.border)
+                .frame(height: 1)
+        }
+        .padding(.vertical, AppSpacing.medium)
     }
 
     private var filteredTasks: [TaskItem] {
@@ -150,11 +242,7 @@ struct ListShellView: View {
     }
 
     private var filteredCompletedTasks: [TaskItem] {
-        store.completedTasks.filter { task in
-            matchesAssignment(task)
-                && matchesList(task)
-                && task.matches(searchText)
-        }
+        store.completedTasks.filter(matchesAllFilters)
     }
 
     private var datedTasks: [TaskItem] {
@@ -166,93 +254,88 @@ struct ListShellView: View {
     }
 
     private func matchesAllFilters(_ task: TaskItem) -> Bool {
-        matchesAssignment(task)
+        state.primaryFilter.matches(task, identity: store.identity)
             && matchesDate(task)
-            && matchesList(task)
-            && task.matches(searchText)
-    }
-
-    private func matchesAssignment(_ task: TaskItem) -> Bool {
-        switch assignmentFilter {
-        case .all:
-            return true
-        case .mine:
-            return task.assigneeKind == .person && task.assigneeUserID == store.identity.currentUserID
-        case .partner:
-            return task.assigneeKind == .person && task.assigneeUserID == store.identity.partnerUserID
-        case .together:
-            return task.assigneeKind == .together
-        }
+            && task.matches(state.searchText)
     }
 
     private func matchesDate(_ task: TaskItem) -> Bool {
-        switch dateFilter {
+        switch state.dateFilter {
         case .all:
-            return true
+            true
         case .today:
-            return task.dueDate.map(calendar.isDateInToday) ?? false
+            task.dueDate.map(calendar.isDateInToday) ?? false
         case .thisWeek:
-            guard let dueDate = task.dueDate,
-                  let interval = calendar.dateInterval(of: .weekOfYear, for: .now) else {
-                return false
-            }
-            return interval.contains(dueDate)
-        case .overdue:
-            guard let dueDate = task.dueDate else { return false }
-            return dueDate < calendar.startOfDay(for: .now)
-        }
-    }
-
-    private func matchesList(_ task: TaskItem) -> Bool {
-        selectedListID == nil || task.listID == selectedListID
-    }
-
-    private func taskSection(title: LocalizedStringKey, tasks: [TaskItem]) -> some View {
-        VStack(alignment: .leading, spacing: AppSpacing.medium) {
-            Text(title)
-                .font(AppTypography.sectionTitle)
-                .foregroundStyle(AppColors.primaryText)
-
-            if tasks.isEmpty {
-                Text("list.no_matches")
-                    .font(AppTypography.body)
-                    .foregroundStyle(AppColors.secondaryText)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .appCard()
+            if let dueDate = task.dueDate,
+               let interval = calendar.dateInterval(of: .weekOfYear, for: .now) {
+                interval.contains(dueDate)
             } else {
-                ForEach(tasks) { task in
-                    taskCard(task)
-                }
+                false
             }
+        case .overdue:
+            task.isOverdue()
         }
     }
 
-    private func filterButton(
-        title: LocalizedStringKey,
-        isSelected: Bool,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            Text(title)
-                .font(AppTypography.caption)
-                .foregroundStyle(isSelected ? .white : AppColors.secondaryText)
-                .padding(.horizontal, AppSpacing.medium)
-                .frame(minHeight: 36)
-                .background(isSelected ? AppColors.accent : AppColors.surface, in: Capsule())
-        }
-        .buttonStyle(.plain)
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
-    }
-
-    private func taskCard(_ task: TaskItem) -> some View {
+    private func taskRow(_ task: TaskItem) -> some View {
         TaskCard(
             task: task,
             identity: store.identity,
             emojiList: store.emojiList(id: task.listID),
+            emojiLists: store.emojiLists,
             onToggle: { store.toggleCompletion(for: task) },
+            context: .tasks,
+            isExpanded: Binding(
+                get: { state.expandedTaskID == task.id },
+                set: { isExpanded in
+                    state.expandedTaskID = isExpanded ? task.id : nil
+                }
+            ),
+            onUpdate: { draft in
+                _ = store.update(id: task.id, with: draft)
+            },
             onEdit: { onEdit(task) },
             onDelete: { store.moveToTrash(task) },
             onReschedule: { store.reschedule(task, to: $0) }
         )
+        .listRowInsets(
+            EdgeInsets(
+                top: AppSpacing.small,
+                leading: AppSpacing.screenMargin,
+                bottom: AppSpacing.small,
+                trailing: AppSpacing.screenMargin
+            )
+        )
+        .listRowBackground(AppColors.canvas)
+        .listRowSeparator(.hidden)
+        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+            Button {
+                store.toggleCompletion(for: task)
+            } label: {
+                Label(
+                    LocalizedStringKey(
+                        task.isCompleted ? "task.mark_incomplete" : "task.mark_complete"
+                    ),
+                    systemImage: task.isCompleted ? "arrow.uturn.backward" : "checkmark"
+                )
+            }
+            .tint(AppColors.success)
+        }
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+            Button(role: .destructive) {
+                store.moveToTrash(task)
+            } label: {
+                Label("task.delete", systemImage: "trash")
+            }
+        }
     }
+}
+
+#Preview("List — Populated") {
+    let environment = AppEnvironment.preview(populated: true)
+    VStack(spacing: 0) {
+        ListFilterToolbar(store: environment.taskStore, state: ListViewState(), onAdd: { _ in })
+        ListShellView(store: environment.taskStore, state: ListViewState(), onEdit: { _ in })
+    }
+    .modelContainer(environment.modelContainer)
 }

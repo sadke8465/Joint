@@ -6,6 +6,7 @@ struct CalendarShellView: View {
 
     @State private var displayedMonth = Calendar.current.dateInterval(of: .month, for: .now)?.start ?? .now
     @State private var selectedDate = Calendar.current.startOfDay(for: .now)
+    @State private var expandedTaskID: UUID?
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.locale) private var locale
@@ -14,13 +15,16 @@ struct CalendarShellView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: AppSpacing.xLarge) {
+            VStack(spacing: AppSpacing.large) {
                 calendarCard
+                assigneeLegend
                 agenda
             }
-            .padding(.horizontal, AppSpacing.large)
+            .padding(.horizontal, AppSpacing.screenMargin)
+            .padding(.top, AppSpacing.small)
             .padding(.bottom, AppSpacing.xxLarge)
         }
+        .background(AppColors.canvas)
         .scrollIndicators(.hidden)
         .simultaneousGesture(horizontalSwipe)
         .accessibilityIdentifier("calendar-screen")
@@ -70,12 +74,18 @@ struct CalendarShellView: View {
                     selectedDate = calendar.startOfDay(for: .now)
                 }
             }
-            .font(AppTypography.caption)
-            .buttonStyle(.bordered)
-            .tint(AppColors.accent)
+            .buttonStyle(AppPillButtonStyle(isSelected: false, tint: AppColors.accent))
         }
         .foregroundStyle(AppColors.primaryText)
-        .appCard()
+        .padding(AppSpacing.large)
+        .background(
+            AppColors.surface,
+            in: RoundedRectangle(cornerRadius: AppRadius.hero, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: AppRadius.hero, style: .continuous)
+                .strokeBorder(AppColors.border.opacity(0.76), lineWidth: 1)
+        }
     }
 
     private var agenda: some View {
@@ -87,24 +97,45 @@ struct CalendarShellView: View {
                     Text(selectedDate, format: .dateTime.weekday(.wide).month(.wide).day())
                 }
             }
-            .font(AppTypography.sectionTitle)
+            .font(AppTypography.dateHero)
             .foregroundStyle(AppColors.primaryText)
             .frame(maxWidth: .infinity, alignment: .leading)
 
             if selectedTasks.isEmpty {
-                ContentUnavailableView(
-                    "calendar.no_tasks",
-                    systemImage: "calendar.badge.checkmark",
-                    description: Text("calendar.no_tasks_description")
-                )
-                .frame(maxWidth: .infinity)
-                .appCard()
+                Label("calendar.no_tasks_description", systemImage: "calendar.badge.checkmark")
+                    .font(AppTypography.metadata)
+                    .foregroundStyle(AppColors.secondaryText)
+                    .frame(maxWidth: .infinity, minHeight: 72, alignment: .leading)
+                    .padding(.horizontal, AppSpacing.large)
+                    .background(
+                        AppColors.groupedBackground.opacity(0.68),
+                        in: RoundedRectangle(cornerRadius: AppRadius.control, style: .continuous)
+                    )
             } else {
                 ForEach(selectedTasks) { task in
                     taskCard(task)
                 }
             }
         }
+    }
+
+    private var assigneeLegend: some View {
+        HStack(spacing: AppSpacing.large) {
+            ForEach(MemberStyle.allCases) { style in
+                HStack(spacing: AppSpacing.xSmall) {
+                    Circle()
+                        .fill(style.color)
+                        .frame(width: 7, height: 7)
+
+                    Text(style.labelKey)
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColors.secondaryText)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("calendar-legend")
     }
 
     private var calendar: Calendar {
@@ -139,10 +170,14 @@ struct CalendarShellView: View {
         }
     }
 
-    private func hasTasks(on date: Date) -> Bool {
-        store.activeTasks.contains { task in
-            task.dueDate.map { calendar.isDate($0, inSameDayAs: date) } ?? false
+    private func memberStyles(on date: Date) -> [MemberStyle] {
+        let styles = store.activeTasks.compactMap { task -> MemberStyle? in
+            guard task.dueDate.map({ calendar.isDate($0, inSameDayAs: date) }) == true else {
+                return nil
+            }
+            return MemberStyle(task: task, identity: store.identity)
         }
+        return MemberStyle.allCases.filter { styles.contains($0) }
     }
 
     private func moveMonth(by offset: Int) {
@@ -169,28 +204,35 @@ struct CalendarShellView: View {
     private func calendarDay(_ date: Date?) -> some View {
         if let date {
             let isSelected = calendar.isDate(date, inSameDayAs: selectedDate)
+            let styles = memberStyles(on: date)
             Button {
                 selectedDate = date
+                expandedTaskID = nil
             } label: {
                 VStack(spacing: 3) {
                     Text(date, format: .dateTime.day())
                         .font(AppTypography.metadata.weight(calendar.isDateInToday(date) ? .bold : .regular))
 
-                    Circle()
-                        .fill(hasTasks(on: date) ? AppColors.accent : .clear)
-                        .frame(width: 4, height: 4)
-                        .accessibilityHidden(true)
+                    HStack(spacing: 2) {
+                        ForEach(styles) { style in
+                            Circle()
+                                .fill(isSelected ? Color.white.opacity(0.82) : style.color)
+                                .frame(width: 5, height: 5)
+                        }
+                    }
+                    .frame(height: 5)
+                    .accessibilityHidden(true)
                 }
                 .frame(maxWidth: .infinity, minHeight: 42)
                 .foregroundStyle(isSelected ? .white : AppColors.primaryText)
                 .background(
                     isSelected ? AppColors.accent : .clear,
-                    in: RoundedRectangle(cornerRadius: 11, style: .continuous)
+                    in: RoundedRectangle(cornerRadius: AppRadius.control, style: .continuous)
                 )
             }
             .buttonStyle(.plain)
             .accessibilityLabel(Text(date, format: .dateTime.month(.wide).day()))
-            .accessibilityValue(hasTasks(on: date) ? Text("calendar.has_tasks") : Text("calendar.no_tasks_value"))
+            .accessibilityValue(styles.isEmpty ? Text("calendar.no_tasks_value") : Text("calendar.has_tasks"))
             .accessibilityAddTraits(isSelected ? .isSelected : [])
             .accessibilityIdentifier("calendar-day-\(calendar.component(.day, from: date))")
         } else {
@@ -205,10 +247,27 @@ struct CalendarShellView: View {
             task: task,
             identity: store.identity,
             emojiList: store.emojiList(id: task.listID),
+            emojiLists: store.emojiLists,
             onToggle: { store.toggleCompletion(for: task) },
+            context: .agenda,
+            isExpanded: Binding(
+                get: { expandedTaskID == task.id },
+                set: { expandedTaskID = $0 ? task.id : nil }
+            ),
+            onUpdate: { draft in
+                _ = store.update(id: task.id, with: draft)
+            },
             onEdit: { onEdit(task) },
             onDelete: { store.moveToTrash(task) },
             onReschedule: { store.reschedule(task, to: $0) }
         )
     }
+}
+
+#Preview("Calendar — Populated") {
+    let environment = AppEnvironment.preview(populated: true)
+    NavigationStack {
+        CalendarShellView(store: environment.taskStore, onEdit: { _ in })
+    }
+    .modelContainer(environment.modelContainer)
 }

@@ -4,49 +4,60 @@ struct SettingsShellView: View {
     let store: TaskStore
 
     @Environment(\.dismiss) private var dismiss
+    @State private var path: [MoreRoute] = []
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             List {
-                Section("settings.our_space") {
-                    Label("fixture.couple_name", systemImage: "person.2.fill")
-                    Label("settings.two_members", systemImage: "checkmark.seal.fill")
+                Section {
+                    coupleRow
+                        .listRowBackground(AppColors.surface)
                 }
 
                 Section("settings.tasks") {
-                    NavigationLink {
-                        ArchiveView(store: store)
-                    } label: {
-                        Label("archive.title", systemImage: "archivebox")
+                    NavigationLink(value: MoreRoute.archive) {
+                        settingsRow(
+                            title: "archive.title",
+                            icon: "archivebox.fill",
+                            tint: AppColors.violet
+                        )
                     }
+                    .accessibilityIdentifier("tasks-archive")
 
-                    NavigationLink {
-                        TrashView(store: store)
-                    } label: {
-                        Label("trash.title", systemImage: "trash")
+                    NavigationLink(value: MoreRoute.emojiLists) {
+                        settingsRow(
+                            title: "lists.title",
+                            icon: "face.smiling.fill",
+                            tint: AppColors.amber
+                        )
                     }
+                    .accessibilityIdentifier("tasks-lists")
 
-                    NavigationLink {
-                        EmojiListsView(store: store)
-                    } label: {
-                        Label("lists.title", systemImage: "face.smiling")
+                    NavigationLink(value: MoreRoute.trash) {
+                        settingsRow(
+                            title: "trash.title",
+                            icon: "trash.fill",
+                            tint: AppColors.coral
+                        )
                     }
-                }
-
-                Section("settings.preferences") {
-                    Label("settings.language", systemImage: "globe")
-                    Label("settings.notifications", systemImage: "bell")
-                    Label("settings.calendar", systemImage: "calendar")
+                    .accessibilityIdentifier("settings-trash")
                 }
 
                 Section {
                     Text("settings.local_note")
                         .font(AppTypography.metadata)
                         .foregroundStyle(AppColors.secondaryText)
+                        .padding(.vertical, AppSpacing.small)
+                        .listRowBackground(AppColors.groupedBackground.opacity(0.65))
                 }
             }
-            .navigationTitle(Text("main.settings"))
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
+            .background(AppColors.canvas)
+            .navigationTitle(Text("main.more"))
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(AppColors.canvas, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("composer.done") {
@@ -55,7 +66,67 @@ struct SettingsShellView: View {
                     .accessibilityIdentifier("settings-done")
                 }
             }
+            .navigationDestination(for: MoreRoute.self) { route in
+                switch route {
+                case .archive:
+                    ArchiveView(store: store)
+                case .emojiLists:
+                    EmojiListsView(store: store)
+                case .trash:
+                    TrashView(store: store)
+                }
+            }
         }
+        .preferredColorScheme(.light)
         .accessibilityIdentifier("settings-shell")
     }
+
+    private var coupleRow: some View {
+        HStack(spacing: AppSpacing.large) {
+            AppIconBadge(
+                systemName: "person.2.fill",
+                tint: AppColors.violet,
+                size: 54
+            )
+
+            VStack(alignment: .leading, spacing: AppSpacing.xSmall) {
+                Text("fixture.couple_name")
+                    .font(AppTypography.sectionTitle)
+                    .foregroundStyle(AppColors.primaryText)
+
+                Label("settings.two_members", systemImage: "checkmark.seal.fill")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColors.violet)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(.vertical, AppSpacing.small)
+        .accessibilityElement(children: .combine)
+    }
+
+    private func settingsRow(
+        title: LocalizedStringKey,
+        icon: String,
+        tint: Color
+    ) -> some View {
+        HStack(spacing: AppSpacing.medium) {
+            Image(systemName: icon)
+                .font(.body.weight(.semibold))
+                .foregroundStyle(tint)
+                .frame(width: 34, height: 34)
+                .background(tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 10))
+                .accessibilityHidden(true)
+
+            Text(title)
+                .font(AppTypography.body)
+                .foregroundStyle(AppColors.primaryText)
+        }
+        .frame(minHeight: 44)
+    }
+}
+
+#Preview("Settings") {
+    let environment = AppEnvironment.preview(populated: true)
+    SettingsShellView(store: environment.taskStore)
+        .modelContainer(environment.modelContainer)
 }

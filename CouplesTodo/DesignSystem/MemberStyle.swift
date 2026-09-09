@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum MemberStyle: String, CaseIterable, Identifiable {
+enum MemberStyle: String, CaseIterable, Identifiable, Hashable {
     case me
     case partner
     case together
@@ -10,11 +10,31 @@ enum MemberStyle: String, CaseIterable, Identifiable {
     var color: Color {
         switch self {
         case .me:
-            Color(red: 0.255, green: 0.520, blue: 0.500)
+            AppColors.turquoise
         case .partner:
-            Color(red: 0.790, green: 0.390, blue: 0.315)
+            AppColors.coral
         case .together:
-            AppColors.accent
+            AppColors.violet
+        }
+    }
+
+    var labelColor: Color {
+        switch self {
+        case .me:
+            Color(red: 0.000, green: 0.420, blue: 0.380)
+        case .partner:
+            Color(red: 0.710, green: 0.210, blue: 0.120)
+        case .together:
+            Color(red: 0.270, green: 0.240, blue: 0.720)
+        }
+    }
+
+    var selectedForeground: Color {
+        switch self {
+        case .me, .partner:
+            AppColors.primaryText
+        case .together:
+            .white
         }
     }
 

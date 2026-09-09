@@ -183,18 +183,11 @@ Keep the schema extensible enough to add a future `completion_mode` if real user
 
 ### 2.8 Default home
 
-Default to the **Week** view.
+Default to the **List** view, matching the mobile web shell pinned at commit `62f3a15f9a272fd9a8b2815ddb407cc61d617b66`.
 
 Do not add a separate Today tab in v1.
 
-Instead:
-
-- Week opens to the current week.
-- Today is visually prominent within the week.
-- User can horizontally swipe to previous/next week.
-- List and Calendar are adjacent modes in the same main screen.
-
-This keeps the app distinctive and avoids four competing top-level views.
+List provides the primary filters and quick-add entry. Week opens to the locale-aware current week and supports horizontal navigation. Calendar preserves native month navigation and selected-day tasks. All three modes remain mounted during the session so their local UI state survives switching.
 
 ### 2.9 Navigation
 
@@ -204,23 +197,28 @@ Main app shell:
 
 ```text
 Main
- ├─ Week
- ├─ List
- └─ Calendar
+ ├─ Fixed couple header
+ │   ├─ List
+ │   ├─ Week
+ │   ├─ Calendar
+ │   └─ More
+ │       ├─ Archive
+ │       ├─ Emoji Lists
+ │       └─ Trash
+ └─ Fixed List-only filter / add toolbar
 ```
 
-Use a polished custom segmented/toolbar switcher at the top rather than a bottom tab bar.
+Use an accessible top mode switcher and a selection-bound hidden `TabView` as a state-preserving container. Do not show a bottom tab bar or wrap each root mode in a separate `NavigationStack`.
 
 Secondary destinations:
 
 - Profile / Couple
 - Notification settings
 - Calendar settings
-- Archive
 - Trash
 - App settings
 
-Open secondary destinations from a profile/settings control in the main header.
+Open Archive, Emoji Lists, Trash, couple/profile content, and app settings from the compact More control available in the fixed header.
 
 Do not add a separate dashboard.
 
@@ -454,10 +452,10 @@ One emoji must be a single grapheme cluster.
 
 Main header should include:
 
-- couple title / names,
-- active task count or compact contextual line,
-- profile/settings button,
-- List / Week / Calendar mode switch.
+- a couple title / names hero on Week,
+- the active task count within that Week hero,
+- a compact profile/settings button on every root tab,
+- page-specific native titles for Tasks and Calendar.
 
 Do not permanently display a large dashboard.
 
@@ -1623,7 +1621,7 @@ Preserve:
 - member color cues,
 - emoji list concept,
 - restrained hierarchy,
-- simple top mode switch,
+- fixed couple header with an accessible List/Week/Calendar switcher,
 - bottom-sheet task creation,
 - sentence-based week view.
 

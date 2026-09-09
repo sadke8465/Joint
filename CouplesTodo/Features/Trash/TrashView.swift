@@ -6,25 +6,35 @@ struct TrashView: View {
     @State private var pendingPermanentDelete: TaskItem?
 
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: AppSpacing.medium) {
-                if store.trashedTasks.isEmpty {
-                    ContentUnavailableView(
-                        "trash.empty",
-                        systemImage: "trash",
-                        description: Text("trash.empty_description")
-                    )
-                    .appCard()
-                } else {
-                    ForEach(store.trashedTasks) { task in
-                        trashRow(task)
-                    }
+        List {
+            Section {
+                Text("trash.empty_description")
+                    .font(AppTypography.metadata)
+                    .foregroundStyle(AppColors.secondaryText)
+                    .padding(.vertical, AppSpacing.small)
+                    .listRowBackground(AppColors.groupedBackground.opacity(0.64))
+            }
+
+            if store.trashedTasks.isEmpty {
+                Label("trash.empty", systemImage: "trash")
+                    .font(AppTypography.body)
+                    .foregroundStyle(AppColors.secondaryText)
+                    .frame(maxWidth: .infinity, minHeight: 100, alignment: .leading)
+                    .listRowBackground(AppColors.canvas)
+                    .listRowSeparator(.hidden)
+            } else {
+                ForEach(store.trashedTasks) { task in
+                    trashRow(task)
                 }
             }
-            .padding(AppSpacing.large)
         }
-        .background(AppColors.background)
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .background(AppColors.canvas)
         .navigationTitle(Text("trash.title"))
+        .toolbarBackground(AppColors.canvas, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .accessibilityIdentifier("trash-screen")
         .alert(
             "trash.delete_forever_title",
             isPresented: deleteConfirmationIsPresented,
@@ -47,36 +57,70 @@ struct TrashView: View {
     }
 
     private func trashRow(_ task: TaskItem) -> some View {
-        VStack(alignment: .leading, spacing: AppSpacing.medium) {
-            Text(task.title)
-                .font(AppTypography.taskTitle)
-                .foregroundStyle(AppColors.primaryText)
-                .frame(maxWidth: .infinity, alignment: .leading)
+        HStack(alignment: .center, spacing: AppSpacing.medium) {
+            VStack(alignment: .leading, spacing: AppSpacing.small) {
+                Text(task.title)
+                    .font(AppTypography.taskTitle)
+                    .foregroundStyle(AppColors.primaryText)
+                    .fixedSize(horizontal: false, vertical: true)
 
-            if let deletedAt = task.deletedAt {
-                Label {
-                    Text(deletedAt, format: .dateTime.month(.abbreviated).day().hour().minute())
-                } icon: {
-                    Image(systemName: "clock")
+                if let deletedAt = task.deletedAt {
+                    Label {
+                        Text(
+                            deletedAt,
+                            format: .dateTime.month(.abbreviated).day().hour().minute()
+                        )
+                    } icon: {
+                        Image(systemName: "clock")
+                    }
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColors.secondaryText)
                 }
-                .font(AppTypography.caption)
-                .foregroundStyle(AppColors.secondaryText)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
-            HStack(spacing: AppSpacing.small) {
-                Button("trash.restore", systemImage: "arrow.uturn.backward") {
-                    store.restoreFromTrash(task)
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(AppColors.accent)
+            Button("trash.restore") {
+                store.restoreFromTrash(task)
+            }
+            .font(AppTypography.caption)
+            .buttonStyle(.bordered)
+            .tint(AppColors.accent)
+            .frame(minHeight: 44)
 
+            Menu {
                 Button("trash.delete_forever", systemImage: "trash", role: .destructive) {
                     pendingPermanentDelete = task
                 }
-                .buttonStyle(.bordered)
+            } label: {
+                Image(systemName: "ellipsis")
+                    .frame(width: 44, height: 44)
             }
-            .font(AppTypography.caption)
+            .foregroundStyle(AppColors.secondaryText)
+            .accessibilityLabel(Text("task.actions"))
         }
-        .appCard()
+        .padding(.vertical, AppSpacing.xSmall)
+        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+            Button {
+                store.restoreFromTrash(task)
+            } label: {
+                Label("trash.restore", systemImage: "arrow.uturn.backward")
+            }
+            .tint(AppColors.success)
+        }
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+            Button(role: .destructive) {
+                pendingPermanentDelete = task
+            } label: {
+                Label("trash.delete_forever", systemImage: "trash")
+            }
+        }
     }
+}
+
+#Preview("Trash — Populated") {
+    let environment = AppEnvironment.preview(populated: true)
+    NavigationStack {
+        TrashView(store: environment.taskStore)
+    }
+    .modelContainer(environment.modelContainer)
 }

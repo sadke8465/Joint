@@ -53,15 +53,18 @@ struct TaskComposerView: View {
                     emojiListSection
                     notesSection
                 }
-                .padding(AppSpacing.large)
+                .padding(.horizontal, AppSpacing.screenMargin)
+                .padding(.vertical, AppSpacing.xLarge)
             }
             .scrollDismissesKeyboard(.interactively)
-            .background(AppColors.background)
+            .background(AppColors.canvas)
             .safeAreaInset(edge: .bottom) {
                 saveButton
             }
             .navigationTitle(Text(LocalizedStringKey(isEditing ? "composer.edit_task" : "composer.new_task")))
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(AppColors.canvas, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("composer.done") {
@@ -102,14 +105,20 @@ struct TaskComposerView: View {
                 .foregroundStyle(AppColors.secondaryText)
 
             TextField("composer.title_placeholder", text: $title, axis: .vertical)
-                .font(AppTypography.body)
+                .font(AppTypography.dateHero)
                 .lineLimit(1...3)
+                .frame(minHeight: 64, alignment: .topLeading)
                 .submitLabel(.done)
                 .focused($titleIsFocused)
                 .onSubmit(submitFromKeyboard)
                 .accessibilityIdentifier("task-title")
         }
-        .appCard()
+        .padding(.bottom, AppSpacing.medium)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(AppColors.border)
+                .frame(height: 1)
+        }
     }
 
     private var assigneeSection: some View {
@@ -145,18 +154,19 @@ struct TaskComposerView: View {
                     } else {
                         VStack(spacing: AppSpacing.xSmall) {
                             Image(systemName: style.iconName)
+                                .font(.title3.weight(.bold))
                             Text(style.composerLabelKey)
                                 .lineLimit(1)
                         }
                     }
                 }
                 .font(AppTypography.caption)
-                .foregroundStyle(assignee == style ? .white : style.color)
+                .foregroundStyle(assignee == style ? style.selectedForeground : style.labelColor)
                 .padding(.horizontal, AppSpacing.small)
                 .frame(maxWidth: .infinity, minHeight: dynamicTypeSize.isAccessibilitySize ? 52 : 64)
                 .background(
                     assignee == style ? style.color : style.color.opacity(0.11),
-                    in: RoundedRectangle(cornerRadius: AppRadius.control, style: .continuous)
+                    in: RoundedRectangle(cornerRadius: AppRadius.card, style: .continuous)
                 )
             }
             .buttonStyle(.plain)
@@ -201,7 +211,7 @@ struct TaskComposerView: View {
             }
         }
         .font(AppTypography.body)
-        .appCard()
+        .appCard(.plain)
     }
 
     private var emojiListSection: some View {
@@ -255,7 +265,7 @@ struct TaskComposerView: View {
             }
             .buttonStyle(.plain)
         }
-        .appCard()
+        .appCard(.soft)
     }
 
     private var notesSection: some View {
@@ -268,22 +278,18 @@ struct TaskComposerView: View {
                 .font(AppTypography.body)
                 .lineLimit(2...5)
         }
-        .appCard()
+        .appCard(.soft)
     }
 
     private var saveButton: some View {
         Button(action: saveAndClose) {
             Text(LocalizedStringKey(isEditing ? "composer.save" : "composer.add"))
-                .font(AppTypography.body.weight(.semibold))
-                .frame(maxWidth: .infinity, minHeight: 52)
-                .foregroundStyle(.white)
-                .background(canSave ? AppColors.accent : AppColors.tertiaryText, in: Capsule())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(AppPrimaryButtonStyle())
         .disabled(!canSave)
-        .padding(.horizontal, AppSpacing.large)
-        .padding(.vertical, AppSpacing.small)
-        .background(AppColors.background.opacity(0.97))
+        .padding(.horizontal, AppSpacing.screenMargin)
+        .padding(.vertical, AppSpacing.medium)
+        .background(AppColors.canvas.shadow(.drop(color: .black.opacity(0.06), radius: 8, y: -2)))
         .accessibilityIdentifier("composer-add")
     }
 
@@ -418,5 +424,331 @@ private enum EmojiListPreset: String, CaseIterable, Identifiable {
 #Preview("Composer") {
     let environment = AppEnvironment.preview()
     TaskComposerView(store: environment.taskStore, taskID: nil)
+        .modelContainer(environment.modelContainer)
+}
+
+struct QuickAddTaskView: View {
+    let store: TaskStore
+    let defaults: TaskCreationDefaults
+
+    @Environment(\.dismiss) private var dismiss
+    @State private var title = ""
+    @State private var notes = ""
+    @State private var assignee: MemberStyle
+    @State private var hasDate = false
+    @State private var dueDate = Date.now
+    @State private var hasTime = false
+    @State private var dueTime = Date.now
+    @State private var selectedListID: UUID?
+    @State private var showsNotes = false
+    @State private var showsDetails = false
+    @State private var saveFeedbackTrigger = 0
+    @FocusState private var titleIsFocused: Bool
+
+    init(store: TaskStore, defaults: TaskCreationDefaults) {
+        self.store = store
+        self.defaults = defaults
+        _assignee = State(initialValue: defaults.assignee)
+        _selectedListID = State(initialValue: defaults.listID)
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: AppSpacing.large) {
+                TextField("composer.title_placeholder", text: $title)
+                    .font(AppTypography.dateHero)
+                    .lineLimit(1)
+                    .submitLabel(.done)
+                    .focused($titleIsFocused)
+                    .onSubmit(saveAndReset)
+                    .accessibilityIdentifier("task-title")
+
+                if showsNotes {
+                    TextField("composer.notes_placeholder", text: $notes, axis: .vertical)
+                        .font(AppTypography.body)
+                        .lineLimit(1...4)
+                        .padding(AppSpacing.medium)
+                        .background(
+                            AppColors.groupedBackground.opacity(0.68),
+                            in: RoundedRectangle(cornerRadius: AppRadius.control)
+                        )
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                }
+
+                quickControls
+
+                Button {
+                    showsDetails = true
+                } label: {
+                    Label("task.edit", systemImage: "slider.horizontal.3")
+                        .font(AppTypography.caption)
+                        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(AppColors.secondaryText)
+                .accessibilityIdentifier("quick-add-more-details")
+
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, AppSpacing.screenMargin)
+            .padding(.top, AppSpacing.large)
+            .background(AppColors.surface)
+            .navigationTitle(Text("composer.new_task"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("action.cancel") { dismiss() }
+                        .accessibilityIdentifier("composer-done")
+                }
+            }
+            .navigationDestination(isPresented: $showsDetails) {
+                QuickAddDetailsView(
+                    store: store,
+                    assignee: $assignee,
+                    hasDate: $hasDate,
+                    dueDate: $dueDate,
+                    hasTime: $hasTime,
+                    dueTime: $dueTime,
+                    selectedListID: $selectedListID,
+                    notes: $notes
+                )
+            }
+            .safeAreaInset(edge: .bottom) {
+                Button(action: saveAndClose) {
+                    Label("composer.add", systemImage: "arrow.up")
+                }
+                .buttonStyle(AppPrimaryButtonStyle(tint: assignee.color))
+                .disabled(!canSave)
+                .padding(.horizontal, AppSpacing.screenMargin)
+                .padding(.vertical, AppSpacing.medium)
+                .background(AppColors.surface.opacity(0.98))
+                .accessibilityIdentifier("composer-add")
+            }
+        }
+        .onAppear { titleIsFocused = true }
+        .onChange(of: hasDate) { _, hasDate in
+            if !hasDate { hasTime = false }
+        }
+        .sensoryFeedback(AppHaptics.selection, trigger: assignee)
+        .sensoryFeedback(AppHaptics.add, trigger: saveFeedbackTrigger)
+        .accessibilityIdentifier("quick-add-sheet")
+    }
+
+    private var quickControls: some View {
+        HStack(spacing: AppSpacing.small) {
+            Menu {
+                ForEach(MemberStyle.allCases) { style in
+                    Button {
+                        assignee = style
+                    } label: {
+                        Label(style.composerLabelKey, systemImage: style.iconName)
+                    }
+                }
+            } label: {
+                Label(assignee.composerLabelKey, systemImage: assignee.iconName)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(assignee.labelColor)
+                    .padding(.horizontal, AppSpacing.medium)
+                    .frame(minHeight: 44)
+                    .background(assignee.color.opacity(0.14), in: Capsule())
+            }
+            .accessibilityIdentifier("quick-add-assignee")
+
+            if hasDate {
+                DatePicker(
+                    "composer.date_value",
+                    selection: $dueDate,
+                    displayedComponents: .date
+                )
+                .labelsHidden()
+                .frame(minHeight: 44)
+            } else {
+                Button {
+                    hasDate = true
+                    dueDate = Calendar.current.startOfDay(for: .now)
+                } label: {
+                    Image(systemName: "calendar")
+                        .frame(width: 44, height: 44)
+                }
+                .foregroundStyle(AppColors.secondaryText)
+                .accessibilityLabel(Text("composer.date"))
+            }
+
+            Menu {
+                Button("composer.none", systemImage: "xmark") {
+                    selectedListID = nil
+                }
+                ForEach(store.emojiLists) { list in
+                    Button("\(list.emoji) \(list.title)") {
+                        selectedListID = list.id
+                    }
+                }
+            } label: {
+                Group {
+                    if let selectedList {
+                        Text(selectedList.emoji)
+                            .font(.title3)
+                    } else {
+                        Image(systemName: "face.smiling")
+                    }
+                }
+                .frame(width: 44, height: 44)
+            }
+            .foregroundStyle(AppColors.secondaryText)
+            .accessibilityLabel(Text("composer.emoji_list"))
+
+            Button {
+                withAnimation(AppMotion.content(reduceMotion: false)) {
+                    showsNotes.toggle()
+                }
+            } label: {
+                Image(systemName: "text.alignleft")
+                    .frame(width: 44, height: 44)
+            }
+            .foregroundStyle(showsNotes ? AppColors.accent : AppColors.secondaryText)
+            .accessibilityLabel(Text("composer.notes"))
+        }
+    }
+
+    private var selectedList: EmojiList? {
+        store.emojiList(id: selectedListID)
+    }
+
+    private var canSave: Bool {
+        !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private func makeDraft() -> TaskDraft {
+        let assignment = assignee.assignment(identity: store.identity)
+        let timeComponents = hasDate && hasTime
+            ? Calendar.current.dateComponents([.hour, .minute], from: dueTime)
+            : nil
+        return TaskDraft(
+            title: title,
+            notes: notes,
+            assigneeKind: assignment.kind,
+            assigneeUserID: assignment.userID,
+            dueDate: hasDate ? dueDate : nil,
+            dueTime: timeComponents,
+            listID: selectedListID
+        )
+    }
+
+    private func saveAndClose() {
+        guard canSave, store.create(makeDraft()) else { return }
+        saveFeedbackTrigger += 1
+        dismiss()
+    }
+
+    private func saveAndReset() {
+        guard canSave, store.create(makeDraft()) else { return }
+        saveFeedbackTrigger += 1
+        title = ""
+        notes = ""
+        assignee = defaults.assignee
+        hasDate = false
+        hasTime = false
+        dueDate = .now
+        dueTime = .now
+        selectedListID = defaults.listID
+        showsNotes = false
+        titleIsFocused = true
+    }
+}
+
+private struct QuickAddDetailsView: View {
+    let store: TaskStore
+    @Binding var assignee: MemberStyle
+    @Binding var hasDate: Bool
+    @Binding var dueDate: Date
+    @Binding var hasTime: Bool
+    @Binding var dueTime: Date
+    @Binding var selectedListID: UUID?
+    @Binding var notes: String
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppSpacing.xLarge) {
+                VStack(alignment: .leading, spacing: AppSpacing.medium) {
+                    Text("composer.assignee")
+                        .font(AppTypography.sectionTitle)
+
+                    HStack(spacing: AppSpacing.small) {
+                        ForEach(MemberStyle.allCases) { style in
+                            Button {
+                                assignee = style
+                            } label: {
+                                VStack(spacing: AppSpacing.xSmall) {
+                                    Image(systemName: style.iconName)
+                                    Text(style.composerLabelKey)
+                                        .lineLimit(1)
+                                }
+                                .font(AppTypography.caption)
+                                .foregroundStyle(
+                                    assignee == style ? style.selectedForeground : style.labelColor
+                                )
+                                .frame(maxWidth: .infinity, minHeight: 64)
+                                .background(
+                                    assignee == style ? style.color : style.color.opacity(0.11),
+                                    in: RoundedRectangle(cornerRadius: AppRadius.card)
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+
+                VStack(spacing: AppSpacing.medium) {
+                    Toggle("composer.date", isOn: $hasDate)
+                    if hasDate {
+                        DatePicker("composer.date_value", selection: $dueDate, displayedComponents: .date)
+                        Toggle("composer.time", isOn: $hasTime)
+                        if hasTime {
+                            DatePicker("composer.time_value", selection: $dueTime, displayedComponents: .hourAndMinute)
+                        }
+                    }
+                }
+                .tint(AppColors.accent)
+                .appCard(.plain)
+
+                Menu {
+                    Button("composer.none", systemImage: "xmark") { selectedListID = nil }
+                    ForEach(store.emojiLists) { list in
+                        Button("\(list.emoji) \(list.title)") { selectedListID = list.id }
+                    }
+                } label: {
+                    HStack {
+                        Label("composer.emoji_list", systemImage: "face.smiling")
+                        Spacer()
+                        Text(selectedListLabel)
+                        Image(systemName: "chevron.up.chevron.down")
+                    }
+                    .frame(minHeight: 52)
+                }
+                .buttonStyle(.plain)
+                .appCard(.soft)
+
+                TextField("composer.notes_placeholder", text: $notes, axis: .vertical)
+                    .lineLimit(2...6)
+                    .appCard(.soft)
+            }
+            .padding(AppSpacing.screenMargin)
+        }
+        .background(AppColors.canvas)
+        .navigationTitle(Text("task.edit"))
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var selectedListLabel: String {
+        guard let list = store.emojiList(id: selectedListID) else {
+            return String(localized: "composer.none")
+        }
+        return "\(list.emoji) \(list.title)"
+    }
+}
+
+#Preview("Quick add") {
+    let environment = AppEnvironment.preview(populated: true)
+    QuickAddTaskView(store: environment.taskStore, defaults: TaskCreationDefaults())
         .modelContainer(environment.modelContainer)
 }

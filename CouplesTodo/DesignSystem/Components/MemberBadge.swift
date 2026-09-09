@@ -14,10 +14,10 @@ struct MemberBadge: View {
                 .font(AppTypography.caption)
                 .lineLimit(1)
         }
-        .foregroundStyle(style.color)
-        .padding(.horizontal, compact ? 7 : 10)
-        .padding(.vertical, compact ? 4 : 6)
-        .background(style.color.opacity(0.11), in: Capsule())
+        .foregroundStyle(style.labelColor)
+        .padding(.horizontal, compact ? 9 : 12)
+        .padding(.vertical, compact ? 5 : 7)
+        .background(style.color.opacity(0.14), in: Capsule())
         .accessibilityElement(children: .combine)
         .accessibilityLabel(style.labelKey)
     }

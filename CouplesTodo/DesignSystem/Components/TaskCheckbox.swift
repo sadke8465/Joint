@@ -8,10 +8,15 @@ struct TaskCheckbox: View {
 
     var body: some View {
         Button(action: action) {
-            Image(systemName: isCompleted ? "checkmark.circle.fill" : "circle")
-                .font(.system(size: 25, weight: .medium))
-                .foregroundStyle(isCompleted ? AppColors.accent : AppColors.tertiaryText)
+            Image(systemName: isCompleted ? "checkmark" : "circle")
+                .font(.system(size: isCompleted ? 17 : 22, weight: .bold))
+                .foregroundStyle(isCompleted ? AppColors.primaryText : AppColors.tertiaryText)
                 .contentTransition(.symbolEffect(.replace))
+                .frame(width: 34, height: 34)
+                .background(
+                    isCompleted ? AppColors.success : AppColors.groupedBackground,
+                    in: Circle()
+                )
                 .frame(width: 44, height: 44)
                 .contentShape(Rectangle())
         }
